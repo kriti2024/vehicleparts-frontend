@@ -478,3 +478,67 @@ textarea:focus {
     align-items: flex-start;
   }
 }
+
+.auth-shell {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.auth-card {
+  width: 460px;
+  max-width: 100%;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+}
+
+.auth-header {
+  margin-bottom: 1.25rem;
+}
+
+.auth-brand {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 0.25rem;
+}
+
+.auth-subtitle {
+  color: var(--text-muted);
+}
+
+.auth-form {
+  margin-top: 1rem;
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.auth-footer {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.auth-footer-split {
+  justify-content: space-between;
+}
+
+.auth-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-link:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
