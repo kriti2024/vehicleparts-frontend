@@ -1,262 +1,301 @@
-import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import {
-    FaUser,
-    FaPhone,
-    FaEnvelope,
-    FaLock,
-    FaCar,
-} from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Logo } from "../../components/Logo";
+import heroCar from "../../assets/hero-car.jpg";
 
-import Logo from "../../components/Logo";
-
-export default function CustomerSignup() {
-    const nav = useNavigate();
-
-    const [form, setForm] = useState({
-        name: "",
-        phone: "",
+export default function RegisterCustomer() {
+    const [formData, setFormData] = useState({
+        fullName: "",
         email: "",
         password: "",
-        confirm: "",
+        phone: "",
         vehicleNumber: "",
-        brand: "",
-        model: "",
-        year: "",
+        vehicleModel: "",
+        vehicleBrand: "",
+        vehicleYear: "",
     });
 
-    const [loading, setLoading] = useState(false);
-
-    const onChange = (
-        key: string,
-        value: string
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement>
     ) => {
-        setForm((prev) => ({
-            ...prev,
-            [key]: value,
-        }));
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
     };
 
-    const submit = async (e: FormEvent) => {
+    const handleSubmit = async (
+        e: React.FormEvent
+    ) => {
         e.preventDefault();
 
-        if (form.password !== form.confirm) {
-            alert("Passwords do not match");
-            return;
-        }
+        console.log(formData);
 
-        try {
-            setLoading(true);
-
-            // API later
-            setTimeout(() => {
-                nav("/login");
-            }, 1000);
-        } finally {
-            setLoading(false);
-        }
+        // Backend API integration later
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4 py-10 relative overflow-hidden">
+        <div className="min-h-screen grid lg:grid-cols-2 bg-background">
 
-            {/* Glow */}
-            <div className="absolute w-72 h-72 bg-cyan-500/20 blur-3xl rounded-full top-0 left-0" />
-            <div className="absolute w-72 h-72 bg-blue-500/20 blur-3xl rounded-full bottom-0 right-0" />
+            {/* LEFT SIDE */}
+            <div className="hidden lg:block relative overflow-hidden">
+                <img
+                    src={heroCar}
+                    alt="Vehicle"
+                    className="absolute inset-0 w-full h-full object-cover"
+                />
 
-            <div className="w-full max-w-3xl relative z-10">
+                <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px]" />
 
-                {/* Logo */}
-                <Link
-                    to="/"
-                    className="flex items-center gap-3 justify-center mb-8"
-                >
-                    <Logo className="w-12 h-12" />
+                <div className="relative z-10 flex flex-col justify-between h-full p-12 text-white">
+                    <Logo dark />
 
-                    <span className="text-2xl font-bold text-white">
-                        VehicleParts
-                    </span>
-                </Link>
-
-                {/* Card */}
-                <div className="bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-8">
-
-                    <h1 className="text-2xl font-bold text-white mb-1">
-                        Create Account
-                    </h1>
-
-                    <p className="text-sm text-gray-400 mb-8">
-                        Add your personal and vehicle details
-                    </p>
-
-                    <form
-                        onSubmit={submit}
-                        className="space-y-8"
-                    >
-
-                        {/* Personal Info */}
-                        <div>
-                            <h2 className="text-white font-semibold mb-4">
-                                Personal Info
-                            </h2>
-
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <Field
-                                    icon={<FaUser />}
-                                    placeholder="Full Name"
-                                    value={form.name}
-                                    onChange={(v) =>
-                                        onChange("name", v)
-                                    }
-                                />
-
-                                <Field
-                                    icon={<FaPhone />}
-                                    placeholder="Phone"
-                                    value={form.phone}
-                                    onChange={(v) =>
-                                        onChange("phone", v)
-                                    }
-                                />
-
-                                <Field
-                                    icon={<FaEnvelope />}
-                                    placeholder="Email"
-                                    type="email"
-                                    value={form.email}
-                                    onChange={(v) =>
-                                        onChange("email", v)
-                                    }
-                                />
-
-                                <Field
-                                    icon={<FaLock />}
-                                    placeholder="Password"
-                                    type="password"
-                                    value={form.password}
-                                    onChange={(v) =>
-                                        onChange("password", v)
-                                    }
-                                />
-
-                                <Field
-                                    icon={<FaLock />}
-                                    placeholder="Confirm Password"
-                                    type="password"
-                                    value={form.confirm}
-                                    onChange={(v) =>
-                                        onChange("confirm", v)
-                                    }
-                                />
-                            </div>
+                    <div className="max-w-lg">
+                        <div className="text-[11px] tracking-[0.35em] uppercase text-white/60 mb-6">
+                            Customer Registration
                         </div>
 
-                        {/* Vehicle Info */}
-                        <div>
-                            <h2 className="text-white font-semibold mb-4">
-                                Vehicle Info
-                            </h2>
+                        <h1 className="text-6xl font-bold leading-[0.95] tracking-tight">
+                            Join
+                            <br />
+                            Axleworks.
+                        </h1>
 
-                            <div className="grid md:grid-cols-2 gap-4">
-                                <Field
-                                    icon={<FaCar />}
-                                    placeholder="Vehicle Number"
-                                    value={form.vehicleNumber}
-                                    onChange={(v) =>
-                                        onChange(
-                                            "vehicleNumber",
-                                            v
-                                        )
-                                    }
-                                />
+                        <p className="mt-8 text-lg text-white/70 leading-relaxed">
+                            Create your customer account to manage vehicle
+                            services, booking history, invoices, and part
+                            requests in one modern platform.
+                        </p>
+                    </div>
 
-                                <Field
-                                    icon={<FaCar />}
-                                    placeholder="Brand"
-                                    value={form.brand}
-                                    onChange={(v) =>
-                                        onChange("brand", v)
-                                    }
-                                />
-
-                                <Field
-                                    icon={<FaCar />}
-                                    placeholder="Model"
-                                    value={form.model}
-                                    onChange={(v) =>
-                                        onChange("model", v)
-                                    }
-                                />
-
-                                <Field
-                                    icon={<FaCar />}
-                                    placeholder="Year"
-                                    value={form.year}
-                                    onChange={(v) =>
-                                        onChange("year", v)
-                                    }
-                                />
-                            </div>
-                        </div>
-
-                        {/* Button */}
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:opacity-90 transition"
-                        >
-                            {loading
-                                ? "Creating..."
-                                : "Create Account"}
-                        </button>
-                    </form>
-
-                    {/* Footer */}
-                    <p className="text-center text-sm text-gray-400 mt-6">
-                        Already have an account?{" "}
-                        <Link
-                            to="/login"
-                            className="text-cyan-400 font-semibold hover:underline"
-                        >
-                            Login
-                        </Link>
-                    </p>
+                    <div className="text-sm text-white/40 tracking-[0.2em] uppercase">
+                        Axleworks © 2026
+                    </div>
                 </div>
             </div>
-        </div>
-    );
-}
 
-/* ---------------- FIELD ---------------- */
+            {/* RIGHT SIDE */}
+            <div className="flex items-center justify-center p-6 lg:p-12">
+                <div className="w-full max-w-2xl">
 
-function Field({
-    icon,
-    placeholder,
-    value,
-    onChange,
-    type = "text",
-}: {
-    icon: React.ReactNode;
-    placeholder: string;
-    value: string;
-    onChange: (v: string) => void;
-    type?: string;
-}) {
-    return (
-        <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                {icon}
+                    <div className="lg:hidden mb-10">
+                        <Logo />
+                    </div>
+
+                    <Link
+                        to="/"
+                        className="text-[11px] tracking-[0.3em] uppercase text-muted-foreground hover:text-foreground transition"
+                    >
+                        ← Back home
+                    </Link>
+
+                    <div className="mt-8 rounded-3xl border border-border bg-card/80 backdrop-blur p-8 shadow-2xl">
+
+                        <h2 className="text-4xl font-bold tracking-tight">
+                            Register
+                        </h2>
+
+                        <p className="mt-3 text-muted-foreground">
+                            Create your customer account and register your vehicle.
+                        </p>
+
+                        <form
+                            onSubmit={handleSubmit}
+                            className="mt-10 space-y-6"
+                        >
+
+                            {/* PERSONAL INFO */}
+                            <div>
+                                <h3 className="text-sm font-semibold tracking-[0.25em] uppercase text-muted-foreground mb-5">
+                                    Personal Information
+                                </h3>
+
+                                <div className="grid md:grid-cols-2 gap-5">
+
+                                    {/* Full Name */}
+                                    <div className="md:col-span-2">
+                                        <label className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                                            Full Name
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            name="fullName"
+                                            value={formData.fullName}
+                                            onChange={handleChange}
+                                            required
+                                            placeholder="Enter your full name"
+                                            className="mt-2 w-full rounded-2xl border border-input bg-background px-5 py-4 text-sm outline-none transition focus:ring-2 focus:ring-accent"
+                                        />
+                                    </div>
+
+                                    {/* Email */}
+                                    <div>
+                                        <label className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                                            Email
+                                        </label>
+
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                            placeholder="Enter your email"
+                                            className="mt-2 w-full rounded-2xl border border-input bg-background px-5 py-4 text-sm outline-none transition focus:ring-2 focus:ring-accent"
+                                        />
+                                    </div>
+
+                                    {/* Phone */}
+                                    <div>
+                                        <label className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                                            Phone Number
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            name="phone"
+                                            value={formData.phone}
+                                            onChange={handleChange}
+                                            required
+                                            placeholder="98XXXXXXXX"
+                                            className="mt-2 w-full rounded-2xl border border-input bg-background px-5 py-4 text-sm outline-none transition focus:ring-2 focus:ring-accent"
+                                        />
+                                    </div>
+
+                                    {/* Password */}
+                                    <div>
+                                        <label className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                                            Password
+                                        </label>
+
+                                        <input
+                                            type="password"
+                                            name="password"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            required
+                                            placeholder="Create password"
+                                            className="mt-2 w-full rounded-2xl border border-input bg-background px-5 py-4 text-sm outline-none transition focus:ring-2 focus:ring-accent"
+                                        />
+                                    </div>
+
+                                    {/* Confirm Password */}
+                                    <div>
+                                        <label className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                                            Confirm Password
+                                        </label>
+
+                                        <input
+                                            type="password"
+                                            name="confirmPassword"
+                                            required
+                                            placeholder="Confirm password"
+                                            className="mt-2 w-full rounded-2xl border border-input bg-background px-5 py-4 text-sm outline-none transition focus:ring-2 focus:ring-accent"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* VEHICLE INFO */}
+                            <div className="pt-2">
+                                <h3 className="text-sm font-semibold tracking-[0.25em] uppercase text-muted-foreground mb-5">
+                                    Vehicle Information
+                                </h3>
+
+                                <div className="grid md:grid-cols-2 gap-5">
+
+                                    {/* Vehicle Number */}
+                                    <div>
+                                        <label className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                                            Vehicle Number
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            name="vehicleNumber"
+                                            value={formData.vehicleNumber}
+                                            onChange={handleChange}
+                                            required
+                                            placeholder="BA-01-PA-1234"
+                                            className="mt-2 w-full rounded-2xl border border-input bg-background px-5 py-4 text-sm outline-none transition focus:ring-2 focus:ring-accent"
+                                        />
+                                    </div>
+
+                                    {/* Vehicle Model */}
+                                    <div>
+                                        <label className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                                            Vehicle Model
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            name="vehicleModel"
+                                            value={formData.vehicleModel}
+                                            onChange={handleChange}
+                                            required
+                                            placeholder="Mustang GT"
+                                            className="mt-2 w-full rounded-2xl border border-input bg-background px-5 py-4 text-sm outline-none transition focus:ring-2 focus:ring-accent"
+                                        />
+                                    </div>
+
+                                    {/* Vehicle Brand */}
+                                    <div>
+                                        <label className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                                            Vehicle Brand
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            name="vehicleBrand"
+                                            value={formData.vehicleBrand}
+                                            onChange={handleChange}
+                                            placeholder="Toyota, Honda..."
+                                            className="mt-2 w-full rounded-2xl border border-input bg-background px-5 py-4 text-sm outline-none transition focus:ring-2 focus:ring-accent"
+                                        />
+                                    </div>
+
+                                    {/* Vehicle Year */}
+                                    <div>
+                                        <label className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                                            Vehicle Year
+                                        </label>
+
+                                        <input
+                                            type="number"
+                                            name="vehicleYear"
+                                            value={formData.vehicleYear}
+                                            onChange={handleChange}
+                                            placeholder="2024"
+                                            className="mt-2 w-full rounded-2xl border border-input bg-background px-5 py-4 text-sm outline-none transition focus:ring-2 focus:ring-accent"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* BUTTON */}
+                            <div className="pt-4">
+                                <button
+                                    type="submit"
+                                    className="w-full rounded-2xl bg-foreground text-background py-4 text-xs font-semibold tracking-[0.3em] uppercase transition hover:opacity-90"
+                                >
+                                    Create Account
+                                </button>
+                            </div>
+                        </form>
+
+                        <p className="mt-8 text-center text-sm text-muted-foreground">
+                            Already have an account?{" "}
+                            <Link
+                                to="/login"
+                                className="text-accent hover:underline"
+                            >
+                                Sign In
+                            </Link>
+                        </p>
+                    </div>
+                </div>
             </div>
-
-            <input
-                type={type}
-                placeholder={placeholder}
-                value={value}
-                onChange={(e) =>
-                    onChange(e.target.value)
-                }
-                className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800 border border-white/10 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            />
         </div>
     );
 }

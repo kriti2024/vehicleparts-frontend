@@ -2,7 +2,14 @@
   "ExpandedNodes": [
     "",
     "\\src",
-    "\\src\\api"
+    "\\src\\api",
+    "\\src\\assets",
+    "\\src\\components",
+    "\\src\\context",
+    "\\src\\pages",
+    "\\src\\pages\\Admin",
+    "\\src\\pages\\Auth"
   ],
+  "SelectedNode": "\\src\\pages\\AboutPage.tsx",
   "PreviewInSolutionExplorer": false
 }
