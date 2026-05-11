@@ -1,21 +1,21 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import HomePage from "./Pages/HomePage";
-import Dashboard from "./Pages/Dashboard";
+import HomePage from "./pages/HomePage";
+import Dashboard from "./pages/Dashboard";
 
-import Login from "./Pages/Auth/Login";
-import RegisterCustomer from "./Pages/Auth/RegisterCustomer";
+import Login from "./pages/Auth/Login";
+import RegisterCustomer from "./pages/Auth/RegisterCustomer";
 
-import AdminDashboard from "./Pages/Admin/Dashboard";
+import AdminDashboard from "./pages/Admin/Dashboard";
 
-import StaffDashboard from "./Pages/Staff/StaffDashboard";
+import StaffDashboard from "./pages/Staff/StaffDashboard";
 import { StaffLayout } from "./components/staff/StaffLayout";
 
-import StaffCustomers from "./Pages/Staff/StaffCustomers";
-import StaffSales from "./Pages/Staff/StaffSales";
-import StaffInvoices from "./Pages/Staff/StaffInvoices";
-import StaffSearch from "./Pages/Staff/StaffSearch";
-import StaffReports from "./Pages/Staff/StaffReports";
+import StaffCustomers from "./pages/Staff/StaffCustomers";
+import StaffSales from "./pages/Staff/StaffSales";
+import StaffInvoices from "./pages/Staff/StaffInvoices";
+import StaffSearch from "./pages/Staff/StaffSearch";
+import StaffReports from "./pages/Staff/StaffReports";
 
 function App() {
   return (
