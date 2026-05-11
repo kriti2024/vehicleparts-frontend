@@ -1,242 +1,178 @@
 import { Link } from "react-router-dom";
-import {
-    FaCar,
-    FaTools,
-    FaShoppingCart,
-    FaStar,
-    FaShieldAlt,
-    FaArrowRight,
-    FaUsers,
-    FaCheckCircle,
-
-} from "react-icons/fa";
-
-import heroImg from "../assets/hero-image.jpg";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import { SiteHeader } from "../components/SiteHeader";
+import { Footer } from "../components/Footer";
+import heroCar from "../assets/hero-car.jpg";
+import { ArrowUpRight, Wrench, Package, Sparkles } from "lucide-react";
 
 export default function HomePage() {
-    const services = [
-        {
-            icon: <FaTools />,
-            title: "Vehicle Repair",
-            desc: "Professional repair services for all vehicle brands.",
-        },
-        {
-            icon: <FaShoppingCart />,
-            title: "Genuine Parts",
-            desc: "Buy authentic spare parts with warranty.",
-        },
-        {
-            icon: <FaCar />,
-            title: "Vehicle Inspection",
-            desc: "Complete diagnostics and performance checks.",
-        },
-    ];
-
-    const features = [
-        "Trusted by 10,000+ Customers",
-        "Certified Mechanics",
-        "100% Genuine Parts",
-        "Fast Delivery & Service",
-        "Modern Inventory System",
-        "Affordable Pricing",
-    ];
-
-    const reviews = [
-        {
-            name: "Rahul Sharma",
-            msg: "Excellent service and original parts. Highly recommended.",
-        },
-        {
-            name: "Sujan Pandit",
-            msg: "Best workshop experience. Friendly staff and quick service.",
-        },
-        {
-            name: "Kriti Tripathi",
-            msg: "Very clean system and easy booking process.",
-        },
-    ];
-
     return (
-        <div className="bg-slate-950 text-white min-h-screen">
-            {/* Navbar */}
-            <Header />
+        <div className="min-h-screen bg-[oklch(0.965_0.012_85)] text-[oklch(0.205_0.012_60)] overflow-x-hidden">
+            <SiteHeader />
 
-            {/* Hero */}
-            <section
-                id="home"
-                className="relative min-h-screen flex items-center pt-16"
-            >
+            {/* HERO */}
+            <section className="relative min-h-screen flex flex-col">
                 <img
-                    src={heroImg}
-                    className="absolute inset-0 w-full h-full object-cover"
+                    src={heroCar}
+                    alt="Concept vehicle"
+                    className="absolute inset-0 h-full w-full object-cover opacity-95"
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-black/40" />
+                <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.965_0.012_85)]/20 via-transparent to-[oklch(0.965_0.012_85)]" />
 
-                <div className="relative z-10 max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
-                    <div>
-                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-500/20 text-cyan-400 text-sm mb-6">
-                            <FaShieldAlt />
-                            Trusted Auto Service Center
-                        </span>
+                <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6 pt-32">
+                    <div className="text-[11px] tracking-[0.35em] uppercase text-[oklch(0.205_0.012_60)]/60 mb-6">
+                        Limited Edition · Service Center
+                    </div>
 
-                        <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6">
-                            Premium Car Parts <br />
-                            <span className="text-cyan-400">& Vehicle Care</span>
-                        </h1>
+                    <h1 className="font-black tracking-tighter text-[oklch(0.205_0.012_60)] text-[18vw] md:text-[8rem] leading-[0.82]">
+                        DRIVE
+                        <br />
+                        TOMORROW
+                        <br />
+                        <span className="text-[oklch(0.74_0.16_65)]">TODAY</span>
+                    </h1>
 
-                        <p className="text-gray-300 text-lg mb-8 max-w-xl">
-                            Buy genuine spare parts, book repair services, manage invoices,
-                            customers, and inventory — all in one smart system.
-                        </p>
+                    <p className="mt-8 max-w-2xl text-sm md:text-base text-[oklch(0.205_0.012_60)]/70 leading-relaxed">
+                        Beyond parts. Beyond service. The complete vehicle management
+                        platform engineered for admins, staff, and customers alike.
+                    </p>
 
-                        <div className="flex gap-4 flex-wrap">
+                    <div className="mt-10 flex flex-wrap gap-4 justify-center">
+                        <Link
+                            to="/login"
+                            className="rounded-full bg-[oklch(0.235_0.012_60)] text-[oklch(0.97_0.012_85)] px-8 py-4 text-xs font-bold tracking-[0.2em] uppercase hover:bg-[oklch(0.205_0.012_60)] transition-all inline-flex items-center gap-2"
+                        >
+                            Enter Platform
+                            <ArrowUpRight className="h-4 w-4" />
+                        </Link>
+
+                        <Link
+                            to="/services"
+                            className="rounded-full border border-[oklch(0.205_0.012_60)]/30 px-8 py-4 text-xs font-bold tracking-[0.2em] uppercase hover:bg-[oklch(0.205_0.012_60)]/10 transition"
+                        >
+                            Explore Services
+                        </Link>
+                    </div>
+                </div>
+
+                {/* STATS */}
+                <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-px bg-[oklch(0.88_0.012_80)] border-t border-[oklch(0.88_0.012_80)]">
+                    {[
+                        { v: "1,847", l: "Parts in stock" },
+                        { v: "99.9%", l: "Service rating" },
+                        { v: "0.8s", l: "Invoice generation" },
+                        { v: "15K+", l: "Happy customers" },
+                    ].map((s) => (
+                        <div key={s.l} className="bg-[oklch(0.965_0.012_85)] px-6 py-8">
+                            <div className="text-3xl font-bold text-[oklch(0.205_0.012_60)]">{s.v}</div>
+                            <div className="text-[10px] tracking-[0.25em] uppercase text-[oklch(0.5_0.012_70)] mt-2">{s.l}</div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* ROLES */}
+            <section className="py-28 px-6 bg-[oklch(0.965_0.012_85)]">
+                <div className="mx-auto max-w-7xl">
+                    <div className="text-[11px] tracking-[0.3em] uppercase text-[oklch(0.5_0.012_70)]">
+                        Built for everyone
+                    </div>
+
+                    <h2 className="mt-3 text-4xl md:text-6xl font-bold tracking-tight max-w-4xl text-[oklch(0.205_0.012_60)]">
+                        One platform.
+                        <br />
+                        Three workspaces.
+                        <span className="text-[oklch(0.74_0.16_65)]"> Zero friction.</span>
+                    </h2>
+
+                    <div className="mt-16 grid md:grid-cols-3 gap-6">
+                        {[
+                            {
+                                icon: Sparkles,
+                                role: "Admin",
+                                desc: "Full control over staff, vendors, parts, purchase invoices and financial reports.",
+                                to: "/admin",
+                            },
+                            {
+                                icon: Wrench,
+                                role: "Staff",
+                                desc: "Register customers, sell parts, generate invoices and email them instantly.",
+                                to: "/staff",
+                            },
+                            {
+                                icon: Package,
+                                role: "Customer",
+                                desc: "Book appointments, request parts and track service history easily.",
+                                to: "/customer",
+                            },
+                        ].map((c) => (
                             <Link
-                                to="/login"
-                                className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 rounded-xl font-semibold flex items-center gap-2"
+                                key={c.role}
+                                to={c.to}
+                                className="group rounded-3xl border border-[oklch(0.88_0.012_80)] bg-[oklch(0.985_0.008_85)] p-8 hover:border-[oklch(0.74_0.16_65)] transition-all duration-300 hover:-translate-y-2"
                             >
-                                Get Started <FaArrowRight />
+                                <c.icon className="h-8 w-8 text-[oklch(0.74_0.16_65)]" />
+
+                                <div className="mt-8 text-3xl font-semibold tracking-tight text-[oklch(0.205_0.012_60)]">
+                                    {c.role}
+                                </div>
+
+                                <p className="mt-3 text-sm text-[oklch(0.5_0.012_70)] leading-relaxed">
+                                    {c.desc}
+                                </p>
+
+                                <div className="mt-8 inline-flex items-center gap-1 text-xs font-bold tracking-[0.2em] uppercase text-[oklch(0.205_0.012_60)] group-hover:text-[oklch(0.74_0.16_65)]">
+                                    Open workspace
+                                    <ArrowUpRight className="h-3.5 w-3.5" />
+                                </div>
                             </Link>
-
-                            <a
-                                href="#services"
-                                className="px-6 py-3 border border-white/20 rounded-xl hover:bg-white/10"
-                            >
-                                Explore Services
-                            </a>
-                        </div>
-
-                        <div className="grid grid-cols-3 gap-6 mt-10">
-                            <div>
-                                <h3 className="text-2xl font-bold">15+</h3>
-                                <p className="text-gray-400 text-sm">Years Experience</p>
-                            </div>
-
-                            <div>
-                                <h3 className="text-2xl font-bold">50K+</h3>
-                                <p className="text-gray-400 text-sm">Parts Available</p>
-                            </div>
-
-                            <div>
-                                <h3 className="text-2xl font-bold">4.9★</h3>
-                                <p className="text-gray-400 text-sm">Customer Rating</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Services */}
-            <section id="services" className="py-24 bg-slate-900">
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center mb-14">
-                        <h2 className="text-4xl font-bold">Our Services</h2>
-                        <p className="text-gray-400 mt-3">
-                            Complete solutions for vehicle owners
-                        </p>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-8">
-                        {services.map((item, i) => (
-                            <div
-                                key={i}
-                                className="p-8 rounded-2xl bg-slate-800 border border-white/10 hover:border-cyan-400 transition"
-                            >
-                                <div className="w-14 h-14 rounded-xl bg-cyan-500 flex items-center justify-center text-xl mb-5">
-                                    {item.icon}
-                                </div>
-
-                                <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
-                                <p className="text-gray-400">{item.desc}</p>
-                            </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* Why Choose Us */}
-            <section id="features" className="py-24 bg-slate-950">
-                <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-14">
+            {/* FEATURES */}
+            <section className="py-28 px-6 bg-[oklch(0.92_0.014_80)] border-y border-[oklch(0.88_0.012_80)]">
+                <div className="mx-auto max-w-7xl grid md:grid-cols-2 gap-20">
                     <div>
-                        <h2 className="text-4xl font-bold mb-6">Why Choose Us?</h2>
-                        <p className="text-gray-400 mb-8">
-                            We provide reliable services, modern technology, and customer
-                            satisfaction with transparent pricing.
+                        <div className="text-[11px] tracking-[0.3em] uppercase text-[oklch(0.5_0.012_70)]">
+                            The system
+                        </div>
+
+                        <h2 className="mt-4 text-4xl md:text-5xl font-bold tracking-tight text-[oklch(0.205_0.012_60)]">
+                            Engineered to keep your business moving.
+                        </h2>
+
+                        <p className="mt-6 text-[oklch(0.5_0.012_70)] leading-relaxed text-lg">
+                            From low-stock alerts under 10 units to overdue credit reminders
+                            past 30 days — automation handles the busywork so your team
+                            focuses on customers.
                         </p>
-
-                        <div className="grid gap-4">
-                            {features.map((item, i) => (
-                                <div key={i} className="flex items-center gap-3">
-                                    <FaCheckCircle className="text-cyan-400" />
-                                    <span>{item}</span>
-                                </div>
-                            ))}
-                        </div>
                     </div>
 
-                    <div className="bg-slate-900 rounded-2xl p-10 border border-white/10">
-                        <div className="grid grid-cols-2 gap-8 text-center">
-                            <div>
-                                <FaUsers className="mx-auto text-4xl text-cyan-400 mb-3" />
-                                <h3 className="text-3xl font-bold">10K+</h3>
-                                <p className="text-gray-400">Happy Clients</p>
-                            </div>
-
-                            <div>
-                                <FaTools className="mx-auto text-4xl text-cyan-400 mb-3" />
-                                <h3 className="text-3xl font-bold">500+</h3>
-                                <p className="text-gray-400">Repairs Monthly</p>
-                            </div>
-
-                            <div>
-                                <FaShoppingCart className="mx-auto text-4xl text-cyan-400 mb-3" />
-                                <h3 className="text-3xl font-bold">50K+</h3>
-                                <p className="text-gray-400">Parts Stock</p>
-                            </div>
-
-                            <div>
-                                <FaStar className="mx-auto text-4xl text-cyan-400 mb-3" />
-                                <h3 className="text-3xl font-bold">4.9</h3>
-                                <p className="text-gray-400">Rating</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Reviews */}
-            <section id="reviews" className="py-24 bg-slate-900">
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="text-center mb-14">
-                        <h2 className="text-4xl font-bold">Customer Reviews</h2>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-8">
-                        {reviews.map((item, i) => (
+                    <div className="space-y-5">
+                        {[
+                            "Auto low-stock alerts to admin (under 10 units)",
+                            "AI predicts vehicle part failures before they happen",
+                            "10% loyalty discount on purchases over Rs. 5000",
+                            "Email reminders for overdue credit payments",
+                            "Daily, monthly and yearly financial reports",
+                        ].map((f) => (
                             <div
-                                key={i}
-                                className="bg-slate-800 p-8 rounded-2xl border border-white/10"
+                                key={f}
+                                className="flex items-start gap-4 border-b border-[oklch(0.88_0.012_80)] pb-5"
                             >
-                                <div className="flex gap-1 text-yellow-400 mb-4">
-                                    <FaStar />
-                                    <FaStar />
-                                    <FaStar />
-                                    <FaStar />
-                                    <FaStar />
+                                <div className="h-7 w-7 rounded-full bg-[oklch(0.74_0.16_65)] text-[oklch(0.18_0.012_60)] grid place-items-center text-xs font-bold shrink-0 mt-0.5">
+                                    ✓
                                 </div>
-
-                                <p className="text-gray-300 mb-5">"{item.msg}"</p>
-                                <h4 className="font-semibold">{item.name}</h4>
+                                <span className="text-base text-[oklch(0.205_0.012_60)]">{f}</span>
                             </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* Footer */}
-             <Footer />
+            <Footer />
         </div>
     );
 }
