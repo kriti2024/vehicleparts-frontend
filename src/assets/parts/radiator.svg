@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650" role="img" aria-labelledby="title desc">
+  <title id="title">Radiator</title>
+  <desc id="desc">Automotive radiator product image</desc>
+  <defs>
+    <linearGradient id="metal" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f6f7f5"/>
+      <stop offset=".48" stop-color="#aeb7bd"/>
+      <stop offset="1" stop-color="#505b63"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="650" fill="#f6f6f3"/>
+  <ellipse cx="455" cy="510" rx="330" ry="50" fill="#000" opacity=".12"/>
+  <g transform="translate(165 112)">
+    <rect x="52" y="30" width="466" height="386" rx="26" fill="#252a2e"/>
+    <rect x="88" y="72" width="394" height="300" rx="10" fill="url(#metal)"/>
+    <g stroke="#3d474e" stroke-width="9" opacity=".65">
+      <path d="M112 78v288M144 78v288M176 78v288M208 78v288M240 78v288M272 78v288M304 78v288M336 78v288M368 78v288M400 78v288M432 78v288M464 78v288"/>
+    </g>
+    <g stroke="#dce2e4" stroke-width="5" opacity=".8">
+      <path d="M96 105h376M96 140h376M96 175h376M96 210h376M96 245h376M96 280h376M96 315h376M96 350h376"/>
+    </g>
+    <rect x="16" y="88" width="56" height="240" rx="18" fill="#1c2124"/>
+    <rect x="498" y="88" width="56" height="240" rx="18" fill="#1c2124"/>
+    <rect x="238" y="0" width="94" height="45" rx="12" fill="#59636a"/>
+    <path d="M554 150c78 4 103 76 52 125" fill="none" stroke="#2b3034" stroke-width="34" stroke-linecap="round"/>
+  </g>
+</svg>

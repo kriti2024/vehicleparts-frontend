@@ -25,6 +25,7 @@ const adminNav = [
     { to: "/admin/parts", label: "Parts", icon: Package },
     { to: "/admin/vendors", label: "Vendors", icon: Truck },
     { to: "/admin/staff", label: "Staff", icon: Users },
+    { to: "/admin/customers", label: "Customers", icon: Users },
     { to: "/admin/invoices", label: "Invoices", icon: FileText },
     { to: "/admin/reports", label: "Reports", icon: BarChart3 },
 ];

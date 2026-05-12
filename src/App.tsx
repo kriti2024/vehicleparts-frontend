@@ -3,8 +3,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Auth/Login";
 import RegisterCustomer from "./pages/Auth/RegisterCustomer";
+import ForgotPassword from "./pages/Auth/ForgotPassword";
 import ServicesPage from "./pages/ServicesPage";
 import AboutPage from "./pages/AboutPage";
+import PartsCatalogPage from "./pages/PartsCatalogPage";
+import ContactPage from "./pages/ContactPage";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import PartsPage from "./pages/Admin/Parts";
 import EditPart from "./pages/Admin/EditPart";
@@ -18,6 +21,8 @@ import AddStaff from "./pages/Admin/AddStaff";
 import InvoicesPage from "./pages/Admin/Invoices";
 import CreatePurchaseInvoice from "./pages/Admin/CreatePurchaseInvoice";
 import ReportsPage from "./pages/Admin/Reports";
+import CustomersPage from "./pages/Admin/Customers";
+import CustomerDashboard from "./pages/Customer/CustomerDashboard";
 function App() {
     return (
         <BrowserRouter>
@@ -38,9 +43,20 @@ function App() {
                     element={<AboutPage />}
                 />
 
+                <Route
+                    path="/parts"
+                    element={<PartsCatalogPage />}
+                />
+
+                <Route
+                    path="/contact"
+                    element={<ContactPage />}
+                />
+
                 {/* Auth */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<RegisterCustomer />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
 
 
                 {/* Admin Dashboard */}
@@ -102,6 +118,29 @@ function App() {
                     path="/admin/reports"
                     element={<ReportsPage />}
                 />
+
+                <Route
+                    path="/admin/customers"
+                    element={<CustomersPage />}
+                />
+
+                {[
+                    "/customer/dashboard",
+                    "/customer/profile",
+                    "/customer/appointments",
+                    "/customer/catalog",
+                    "/customer/parts",
+                    "/customer/payments",
+                    "/customer/support",
+                    "/customer/notifications",
+                    "/customer/history",
+                ].map((path) => (
+                    <Route
+                        key={path}
+                        path={path}
+                        element={<CustomerDashboard />}
+                    />
+                ))}
 
             </Routes>
         </BrowserRouter>

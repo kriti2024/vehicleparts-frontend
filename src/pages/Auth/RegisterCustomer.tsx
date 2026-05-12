@@ -1,19 +1,24 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Logo } from "../../components/Logo";
 import heroCar from "../../assets/hero-car.jpg";
+import { registerCustomer } from "../../api/customer";
 
 export default function RegisterCustomer() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         fullName: "",
         email: "",
         password: "",
+        confirmPassword: "",
         phone: "",
         vehicleNumber: "",
         vehicleModel: "",
         vehicleBrand: "",
         vehicleYear: "",
     });
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState("");
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement>
@@ -29,9 +34,26 @@ export default function RegisterCustomer() {
     ) => {
         e.preventDefault();
 
-        console.log(formData);
+        if (formData.password !== formData.confirmPassword) {
+            setError("Passwords do not match.");
+            return;
+        }
 
-        // Backend API integration later
+        setSubmitting(true);
+        setError("");
+
+        try {
+            await registerCustomer(formData);
+            navigate("/login", {
+                state: {
+                    registeredEmail: formData.email.trim(),
+                },
+            });
+        } catch {
+            setError("Unable to register customer. Please try again.");
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -69,7 +91,7 @@ export default function RegisterCustomer() {
                     </div>
 
                     <div className="text-sm text-white/40 tracking-[0.2em] uppercase">
-                        Axleworks © 2026
+                        Axleworks 2026
                     </div>
                 </div>
             </div>
@@ -86,7 +108,7 @@ export default function RegisterCustomer() {
                         to="/"
                         className="text-[11px] tracking-[0.3em] uppercase text-muted-foreground hover:text-foreground transition"
                     >
-                        ← Back home
+                        Back home
                     </Link>
 
                     <div className="mt-8 rounded-3xl border border-border bg-card/80 backdrop-blur p-8 shadow-2xl">
@@ -189,6 +211,8 @@ export default function RegisterCustomer() {
                                         <input
                                             type="password"
                                             name="confirmPassword"
+                                            value={formData.confirmPassword}
+                                            onChange={handleChange}
                                             required
                                             placeholder="Confirm password"
                                             className="mt-2 w-full rounded-2xl border border-input bg-background px-5 py-4 text-sm outline-none transition focus:ring-2 focus:ring-accent"
@@ -275,11 +299,18 @@ export default function RegisterCustomer() {
 
                             {/* BUTTON */}
                             <div className="pt-4">
+                                {error && (
+                                    <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                                        {error}
+                                    </div>
+                                )}
+
                                 <button
                                     type="submit"
+                                    disabled={submitting}
                                     className="w-full rounded-2xl bg-foreground text-background py-4 text-xs font-semibold tracking-[0.3em] uppercase transition hover:opacity-90"
                                 >
-                                    Create Account
+                                    {submitting ? "Creating..." : "Create Account"}
                                 </button>
                             </div>
                         </form>
@@ -299,3 +330,4 @@ export default function RegisterCustomer() {
         </div>
     );
 }
+

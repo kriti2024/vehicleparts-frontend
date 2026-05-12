@@ -40,6 +40,11 @@ const adminNav = [
         icon: Users,
     },
     {
+        to: "/admin/customers",
+        label: "Customers",
+        icon: Users,
+    },
+    {
         to: "/admin/invoices",
         label: "Invoices",
         icon: FileText,

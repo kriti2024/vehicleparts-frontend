@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650" role="img" aria-labelledby="title desc">
+  <title id="title">Car battery</title>
+  <desc id="desc">Automotive battery product image</desc>
+  <defs>
+    <linearGradient id="case" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#2f3439"/>
+      <stop offset="1" stop-color="#090b0d"/>
+    </linearGradient>
+    <linearGradient id="top" x1="0" x2="1">
+      <stop offset="0" stop-color="#fafafa"/>
+      <stop offset="1" stop-color="#bfc5c8"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="650" fill="#f5f5f2"/>
+  <ellipse cx="450" cy="505" rx="315" ry="55" fill="#000" opacity=".14"/>
+  <g transform="translate(175 135)">
+    <rect x="48" y="0" width="92" height="62" rx="12" fill="#262a2e"/>
+    <rect x="410" y="0" width="92" height="62" rx="12" fill="#262a2e"/>
+    <rect x="0" y="42" width="550" height="350" rx="34" fill="url(#case)"/>
+    <rect x="34" y="78" width="482" height="78" rx="18" fill="url(#top)"/>
+    <rect x="54" y="190" width="442" height="142" rx="18" fill="#e8ecef"/>
+    <rect x="80" y="218" width="180" height="86" rx="10" fill="#efcc37"/>
+    <text x="170" y="273" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="800" fill="#161616">12V</text>
+    <text x="335" y="260" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="800" fill="#262a2e">CAR</text>
+    <text x="335" y="292" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="800" fill="#262a2e">BATTERY</text>
+    <circle cx="94" cy="117" r="24" fill="#d5312d"/>
+    <circle cx="456" cy="117" r="24" fill="#202428"/>
+    <path d="M80 358h390" stroke="#343a40" stroke-width="18" stroke-linecap="round" opacity=".7"/>
+  </g>
+</svg>

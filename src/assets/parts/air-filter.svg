@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650" role="img" aria-labelledby="title desc">
+  <title id="title">Air filter</title>
+  <desc id="desc">Automotive panel air filter product image</desc>
+  <defs>
+    <linearGradient id="paper" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f9f1d8"/>
+      <stop offset="1" stop-color="#d7bc78"/>
+    </linearGradient>
+    <linearGradient id="frame" x1="0" x2="1">
+      <stop offset="0" stop-color="#242424"/>
+      <stop offset="1" stop-color="#0d0d0d"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="650" fill="#f5f5f2"/>
+  <ellipse cx="450" cy="510" rx="310" ry="52" fill="#000" opacity=".13"/>
+  <g transform="translate(150 120) rotate(-6 300 205)">
+    <rect x="10" y="12" width="590" height="390" rx="46" fill="url(#frame)"/>
+    <rect x="54" y="55" width="502" height="304" rx="26" fill="#191919"/>
+    <g clip-path="url(#clip)">
+      <rect x="76" y="78" width="458" height="258" rx="12" fill="url(#paper)"/>
+      <path d="M92 78 116 336M132 78 156 336M172 78 196 336M212 78 236 336M252 78 276 336M292 78 316 336M332 78 356 336M372 78 396 336M412 78 436 336M452 78 476 336M492 78 516 336" stroke="#a87d32" stroke-width="15" opacity=".75"/>
+      <path d="M116 78 92 336M156 78 132 336M196 78 172 336M236 78 212 336M276 78 252 336M316 78 292 336M356 78 332 336M396 78 372 336M436 78 412 336M476 78 452 336M516 78 492 336" stroke="#ffe7a3" stroke-width="7" opacity=".75"/>
+    </g>
+    <rect x="54" y="55" width="502" height="304" rx="26" fill="none" stroke="#343434" stroke-width="20"/>
+    <path d="M64 50c56-42 420-48 482-2" fill="none" stroke="#505050" stroke-width="10" opacity=".5"/>
+  </g>
+  <defs>
+    <clipPath id="clip">
+      <rect x="76" y="78" width="458" height="258" rx="12"/>
+    </clipPath>
+  </defs>
+</svg>

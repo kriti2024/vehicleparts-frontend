@@ -38,6 +38,42 @@ import engineOilImg
 import sparkPlugImg
     from "../../assets/parts/spark-plug.jpg";
 
+import airFilterImg
+    from "../../assets/parts/air-filter.svg";
+
+import clutchPlateImg
+    from "../../assets/parts/clutch-plate.svg";
+
+import alloyWheelImg
+    from "../../assets/parts/alloy-wheel.svg";
+
+import carBatteryImg
+    from "../../assets/parts/car-battery.svg";
+
+import radiatorImg
+    from "../../assets/parts/radiator.svg";
+
+import headlightImg
+    from "../../assets/parts/headlight.svg";
+
+import tireImg
+    from "../../assets/parts/tire.svg";
+
+import fuelFilterImg
+    from "../../assets/parts/fuel-filter.svg";
+
+import wiperBladeImg
+    from "../../assets/parts/wiper-blade.svg";
+
+import shockAbsorberImg
+    from "../../assets/parts/shock-absorber.svg";
+
+import alternatorImg
+    from "../../assets/parts/alternator.svg";
+
+import timingBeltImg
+    from "../../assets/parts/timing-belt.svg";
+
 import defaultImg
     from "../../assets/parts/default.png";
 
@@ -60,6 +96,11 @@ const adminNav = [
     {
         to: "/admin/staff",
         label: "Staff",
+        icon: Users,
+    },
+    {
+        to: "/admin/customers",
+        label: "Customers",
         icon: Users,
     },
     {
@@ -93,6 +134,236 @@ type Part = {
     vehicleModel?: string;
 };
 
+const fallbackParts: Part[] = [
+    {
+        partId: 1,
+        partName: "Brake Pad",
+        price: 3200,
+        stockQuantity: 18,
+        vendorId: 1,
+        vendorName: "Axleworks Stock",
+        vehicleBrand: "Toyota / Honda",
+        vehicleModel: "Sedan and compact SUV",
+    },
+    {
+        partId: 2,
+        partName: "Engine Oil",
+        price: 1850,
+        stockQuantity: 26,
+        vendorId: 1,
+        vendorName: "Axleworks Stock",
+        vehicleBrand: "Multi-brand",
+        vehicleModel: "Petrol engines",
+    },
+    {
+        partId: 3,
+        partName: "Spark Plug",
+        price: 950,
+        stockQuantity: 34,
+        vendorId: 1,
+        vendorName: "Axleworks Stock",
+        vehicleBrand: "Nissan / Hyundai",
+        vehicleModel: "1.2L to 1.8L engines",
+    },
+    {
+        partId: 4,
+        partName: "Air Filter",
+        price: 780,
+        stockQuantity: 12,
+        vendorId: 1,
+        vendorName: "Axleworks Stock",
+        vehicleBrand: "Universal",
+        vehicleModel: "Most passenger vehicles",
+    },
+    {
+        partId: 5,
+        partName: "Clutch Plate",
+        price: 4200,
+        stockQuantity: 9,
+        vendorId: 1,
+        vendorName: "Axleworks Stock",
+        vehicleBrand: "Toyota / Suzuki",
+        vehicleModel: "Manual transmission",
+    },
+    {
+        partId: 6,
+        partName: "Alloy Wheel",
+        price: 8500,
+        stockQuantity: 16,
+        vendorId: 1,
+        vendorName: "Axleworks Stock",
+        vehicleBrand: "Universal",
+        vehicleModel: "15 to 17 inch fitment",
+    },
+    {
+        partId: 7,
+        partName: "Car Battery",
+        price: 7600,
+        stockQuantity: 14,
+        vendorId: 1,
+        vendorName: "Axleworks Stock",
+        vehicleBrand: "Multi-brand",
+        vehicleModel: "12V passenger vehicles",
+    },
+    {
+        partId: 8,
+        partName: "Radiator",
+        price: 9800,
+        stockQuantity: 8,
+        vendorId: 1,
+        vendorName: "Axleworks Stock",
+        vehicleBrand: "Toyota / Nissan",
+        vehicleModel: "Sedan and SUV cooling system",
+    },
+    {
+        partId: 9,
+        partName: "Headlight",
+        price: 5200,
+        stockQuantity: 20,
+        vendorId: 1,
+        vendorName: "Axleworks Stock",
+        vehicleBrand: "Hyundai / Suzuki",
+        vehicleModel: "Front lighting assembly",
+    },
+    {
+        partId: 10,
+        partName: "Tire",
+        price: 6900,
+        stockQuantity: 24,
+        vendorId: 1,
+        vendorName: "Axleworks Stock",
+        vehicleBrand: "Universal",
+        vehicleModel: "Passenger vehicle tire",
+    },
+    {
+        partId: 11,
+        partName: "Fuel Filter",
+        price: 1450,
+        stockQuantity: 17,
+        vendorId: 1,
+        vendorName: "Axleworks Stock",
+        vehicleBrand: "Multi-brand",
+        vehicleModel: "Petrol and diesel engines",
+    },
+    {
+        partId: 12,
+        partName: "Wiper Blade",
+        price: 1200,
+        stockQuantity: 30,
+        vendorId: 1,
+        vendorName: "Axleworks Stock",
+        vehicleBrand: "Universal",
+        vehicleModel: "Front windshield",
+    },
+    {
+        partId: 13,
+        partName: "Shock Absorber",
+        price: 6400,
+        stockQuantity: 10,
+        vendorId: 1,
+        vendorName: "Axleworks Stock",
+        vehicleBrand: "Toyota / Hyundai",
+        vehicleModel: "Suspension system",
+    },
+    {
+        partId: 14,
+        partName: "Alternator",
+        price: 11800,
+        stockQuantity: 7,
+        vendorId: 1,
+        vendorName: "Axleworks Stock",
+        vehicleBrand: "Multi-brand",
+        vehicleModel: "Charging system",
+    },
+    {
+        partId: 15,
+        partName: "Timing Belt",
+        price: 3600,
+        stockQuantity: 15,
+        vendorId: 1,
+        vendorName: "Axleworks Stock",
+        vehicleBrand: "Honda / Nissan",
+        vehicleModel: "Engine timing system",
+    },
+];
+
+const getPartKey = (
+    partName: string
+) => {
+    const name =
+        partName.toLowerCase();
+
+    if (name.includes("brake"))
+        return "brake";
+
+    if (name.includes("oil"))
+        return "oil";
+
+    if (name.includes("spark"))
+        return "spark";
+
+    if (name.includes("air") && name.includes("filter"))
+        return "air-filter";
+
+    if (name.includes("clutch") || name.includes("clucth") || name.includes("plage"))
+        return "clutch";
+
+    if (name.includes("alloy") || name.includes("aloy") || name.includes("wheel"))
+        return "alloy-wheel";
+
+    if (name.includes("battery"))
+        return "battery";
+
+    if (name.includes("radiator"))
+        return "radiator";
+
+    if (name.includes("headlight") || name.includes("head light"))
+        return "headlight";
+
+    if (name.includes("tire") || name.includes("tyre"))
+        return "tire";
+
+    if (name.includes("fuel") && name.includes("filter"))
+        return "fuel-filter";
+
+    if (name.includes("wiper"))
+        return "wiper";
+
+    if (name.includes("shock") || name.includes("absorber"))
+        return "shock-absorber";
+
+    if (name.includes("alternator"))
+        return "alternator";
+
+    if (name.includes("timing") && name.includes("belt"))
+        return "timing-belt";
+
+    return name.trim();
+};
+
+const includeFallbackParts = (
+    apiParts: Part[]
+) => {
+    const existingKeys =
+        new Set(
+            apiParts.map((part) =>
+                getPartKey(part.partName)
+            )
+        );
+
+    const missingParts =
+        fallbackParts.filter((part) =>
+            !existingKeys.has(
+                getPartKey(part.partName)
+            )
+        );
+
+    return [
+        ...apiParts,
+        ...missingParts,
+    ];
+};
+
 export default function PartsPage() {
 
     const navigate =
@@ -113,11 +384,16 @@ export default function PartsPage() {
                 const response =
                     await api.get("/Part");
 
-                setParts(response.data);
+                setParts(
+                    includeFallbackParts(
+                        response.data
+                    )
+                );
 
             } catch (error) {
 
                 console.error(error);
+                setParts(fallbackParts);
             }
 
             finally {
@@ -175,6 +451,42 @@ export default function PartsPage() {
 
         if (name.includes("spark"))
             return sparkPlugImg;
+
+        if (name.includes("air") && name.includes("filter"))
+            return airFilterImg;
+
+        if (name.includes("clutch") || name.includes("clucth") || name.includes("plage"))
+            return clutchPlateImg;
+
+        if (name.includes("alloy") || name.includes("aloy") || name.includes("wheel"))
+            return alloyWheelImg;
+
+        if (name.includes("battery"))
+            return carBatteryImg;
+
+        if (name.includes("radiator"))
+            return radiatorImg;
+
+        if (name.includes("headlight") || name.includes("head light"))
+            return headlightImg;
+
+        if (name.includes("tire") || name.includes("tyre"))
+            return tireImg;
+
+        if (name.includes("fuel") && name.includes("filter"))
+            return fuelFilterImg;
+
+        if (name.includes("wiper"))
+            return wiperBladeImg;
+
+        if (name.includes("shock") || name.includes("absorber"))
+            return shockAbsorberImg;
+
+        if (name.includes("alternator"))
+            return alternatorImg;
+
+        if (name.includes("timing") && name.includes("belt"))
+            return timingBeltImg;
 
         return defaultImg;
     };
@@ -361,6 +673,11 @@ export default function PartsPage() {
                                                             )
                                                     }
                                                     alt={part.partName}
+                                                    onError={(event) => {
+                                                        event.currentTarget.src = getLocalImage(
+                                                            part.partName
+                                                        );
+                                                    }}
                                                     className="h-16 w-16 rounded-2xl object-cover border border-[oklch(0.88_0.012_80)]"
                                                 />
 
