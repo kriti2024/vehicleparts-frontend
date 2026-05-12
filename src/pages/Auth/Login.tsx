@@ -1,185 +1,182 @@
-import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-    FaEnvelope,
-    FaLock,
-    FaUserShield,
-} from "react-icons/fa";
-
+import { Logo } from "../../components/Logo";
+import heroCar from "../../assets/hero-car.jpg";
+import { useState } from "react";
 import { useAuth } from "../../context/useAuth";
-import Logo from "../../components/Logo";
-import type { AxiosError } from "axios";
 
-export default function Login() {
+export default function LoginPage() {
+
+    const navigate = useNavigate();
     const { login } = useAuth();
-    const nav = useNavigate();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [remember, setRemember] = useState(true);
-    const [loading, setLoading] = useState(false);
 
-    const submit = async (e: FormEvent) => {
+    const handleLogin = async (
+        e: React.FormEvent
+    ) => {
         e.preventDefault();
 
         try {
-            setLoading(true);
 
-            const user = await login(email, password);
+            const user = await login(
+                email,
+                password
+            );
 
             if (user.roles.includes("Admin")) {
-                nav("/admin");
-            } else if (user.roles.includes("Staff")) {
-                nav("/staff");
-            } else {
-                nav("/customer");
+                navigate("/admin/dashboard");
             }
-        } catch (error: unknown) {
-            const err = error as AxiosError<{
-                errors?: string[];
-            }>;
+            else if (user.roles.includes("Staff")) {
+                navigate("/staff/dashboard");
+            }
+            else {
+                navigate("/customer/dashboard");
+            }
 
-            alert(
-                err.response?.data?.errors?.[0] ||
-                "Invalid email or password"
-            );
-        } finally {
-            setLoading(false);
+        } catch {
+            alert("Invalid email or password");
         }
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4 relative overflow-hidden">
+        <div className="min-h-screen grid lg:grid-cols-2 bg-background">
 
-            {/* Background Glow */}
-            <div className="absolute w-72 h-72 bg-cyan-500/20 blur-3xl rounded-full -top-10 -left-10" />
-            <div className="absolute w-72 h-72 bg-blue-500/20 blur-3xl rounded-full bottom-0 right-0" />
+            {/* LEFT SIDE */}
+            <div className="hidden lg:block relative overflow-hidden">
+                <img
+                    src={heroCar}
+                    alt="Vehicle"
+                    className="absolute inset-0 w-full h-full object-cover"
+                />
 
-            <div className="w-full max-w-md relative z-10">
+                <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px]" />
 
-                {/* Logo */}
-                <Link
-                    to="/"
-                    className="flex items-center gap-3 justify-center mb-8"
-                >
-                    <Logo className="w-12 h-12" />
+                <div className="relative z-10 flex flex-col justify-between h-full p-12 text-white">
+                    <Logo dark />
 
-                    <span className="font-bold text-2xl text-white">
-                        VehicleParts
-                    </span>
-                </Link>
+                    <div className="max-w-lg">
+                        <div className="text-[11px] tracking-[0.35em] uppercase text-white/60 mb-6">
+                            Premium Vehicle Platform
+                        </div>
 
-                {/* Card */}
-                <div className="bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 p-8 animate-fade-in">
+                        <h1 className="text-6xl font-bold leading-[0.95] tracking-tight">
+                            Welcome
+                            <br />
+                            back.
+                        </h1>
 
-                    <h1 className="text-2xl font-bold text-white mb-1">
-                        Welcome Back
-                    </h1>
+                        <p className="mt-8 text-lg text-white/70 leading-relaxed">
+                            Manage vehicle services, parts inventory,
+                            invoices, customer operations and analytics —
+                            all in one luxury platform.
+                        </p>
+                    </div>
 
-                    <p className="text-sm text-gray-400 mb-6">
-                        Sign in to access your dashboard
-                    </p>
+                    <div className="text-sm text-white/40 tracking-[0.2em] uppercase">
+                        Axleworks © 2026
+                    </div>
+                </div>
+            </div>
 
-                    {/* Form */}
-                    <form onSubmit={submit} className="space-y-4">
+            {/* RIGHT SIDE */}
+            <div className="flex items-center justify-center p-6 lg:p-12">
+                <div className="w-full max-w-md">
 
-                        {/* Email */}
-                        <div>
-                            <label className="text-sm font-medium text-gray-300">
-                                Email
-                            </label>
+                    <div className="lg:hidden mb-10">
+                        <Logo />
+                    </div>
 
-                            <div className="relative mt-1">
-                                <FaEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                    <Link
+                        to="/"
+                        className="text-[11px] tracking-[0.3em] uppercase text-muted-foreground hover:text-foreground transition"
+                    >
+                        ← Back home
+                    </Link>
+
+                    <div className="mt-8 rounded-3xl border border-border bg-card/80 backdrop-blur p-8 shadow-2xl">
+
+                        <h2 className="text-4xl font-bold tracking-tight">
+                            Sign in
+                        </h2>
+
+                        <p className="mt-3 text-muted-foreground">
+                            Enter your credentials to continue.
+                        </p>
+
+                        <form
+                            onSubmit={handleLogin}
+                            className="mt-8 space-y-5"
+                        >
+
+                            {/* EMAIL */}
+                            <div>
+                                <label className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                                    Email
+                                </label>
 
                                 <input
                                     type="email"
-                                    required
+                                    placeholder="Enter your email"
                                     value={email}
                                     onChange={(e) =>
                                         setEmail(e.target.value)
                                     }
-                                    placeholder="admin@vehicleparts.com"
-                                    className="w-full pl-10 pr-3 py-3 rounded-xl border border-white/10 bg-slate-800 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                                    className="mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-accent"
                                 />
                             </div>
-                        </div>
 
-                        {/* Password */}
-                        <div>
-                            <label className="text-sm font-medium text-gray-300">
-                                Password
-                            </label>
-
-                            <div className="relative mt-1">
-                                <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                            {/* PASSWORD */}
+                            <div>
+                                <label className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                                    Password
+                                </label>
 
                                 <input
                                     type="password"
-                                    required
+                                    placeholder="Enter your password"
                                     value={password}
                                     onChange={(e) =>
                                         setPassword(e.target.value)
                                     }
-                                    placeholder="••••••••"
-                                    className="w-full pl-10 pr-3 py-3 rounded-xl border border-white/10 bg-slate-800 text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                                    className="mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-accent"
                                 />
                             </div>
-                        </div>
 
-                        {/* Remember */}
-                        <div className="flex items-center justify-between text-sm">
-                            <label className="flex items-center gap-2 text-gray-400">
-                                <input
-                                    type="checkbox"
-                                    checked={remember}
-                                    onChange={(e) =>
-                                        setRemember(e.target.checked)
-                                    }
-                                />
-                                Remember me
-                            </label>
+                            {/* REMEMBER */}
+                            <div className="flex items-center justify-between text-sm">
+                                <label className="flex items-center gap-2 text-muted-foreground">
+                                    <input type="checkbox" />
+                                    Remember me
+                                </label>
 
-                            <Link
-                                to="/forgot-password"
-                                className="text-cyan-400 font-medium hover:underline"
+                                <Link
+                                    to="/forgot-password"
+                                    className="text-accent hover:underline"
+                                >
+                                    Forgot password?
+                                </Link>
+                            </div>
+
+                            {/* BUTTON */}
+                            <button
+                                type="submit"
+                                className="w-full rounded-xl bg-foreground text-background py-3.5 text-xs font-semibold tracking-[0.25em] uppercase transition hover:opacity-90"
                             >
-                                Forgot?
+                                Sign In
+                            </button>
+                        </form>
+
+                        <p className="mt-8 text-center text-sm text-muted-foreground">
+                            Don’t have an account?{" "}
+                            <Link
+                                to="/register"
+                                className="text-accent hover:underline"
+                            >
+                                Register
                             </Link>
-                        </div>
-
-                        {/* Button */}
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold hover:opacity-90 transition"
-                        >
-                            {loading ? "Signing In..." : "Sign In"}
-                        </button>
-                    </form>
-
-                    {/* Demo */}
-                    <div className="mt-6 p-4 rounded-xl bg-slate-800/70 text-xs text-gray-400 flex items-start gap-3 border border-white/10">
-                        <FaUserShield className="mt-0.5 text-cyan-400 shrink-0" />
-
-                        <div>
-                            <strong className="text-white">
-                                Demo:
-                            </strong>{" "}
-                            admin = Admin, staff = Staff, others = Customer
-                        </div>
+                        </p>
                     </div>
-
-                    {/* Register */}
-                    <p className="text-center text-sm text-gray-400 mt-6">
-                        Don’t have an account?{" "}
-                        <Link
-                            to="/register"
-                            className="text-cyan-400 font-semibold hover:underline"
-                        >
-                            Register
-                        </Link>
-                    </p>
                 </div>
             </div>
         </div>
