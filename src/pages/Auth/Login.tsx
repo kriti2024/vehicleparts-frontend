@@ -1,8 +1,44 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Logo } from "../../components/Logo";
 import heroCar from "../../assets/hero-car.jpg";
+import { useState } from "react";
+import { useAuth } from "../../context/useAuth";
 
 export default function LoginPage() {
+
+    const navigate = useNavigate();
+    const { login } = useAuth();
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const handleLogin = async (
+        e: React.FormEvent
+    ) => {
+        e.preventDefault();
+
+        try {
+
+            const user = await login(
+                email,
+                password
+            );
+
+            if (user.roles.includes("Admin")) {
+                navigate("/admin/dashboard");
+            }
+            else if (user.roles.includes("Staff")) {
+                navigate("/staff/dashboard");
+            }
+            else {
+                navigate("/customer/dashboard");
+            }
+
+        } catch {
+            alert("Invalid email or password");
+        }
+    };
+
     return (
         <div className="min-h-screen grid lg:grid-cols-2 bg-background">
 
@@ -68,8 +104,12 @@ export default function LoginPage() {
                             Enter your credentials to continue.
                         </p>
 
-                        <form className="mt-8 space-y-5">
+                        <form
+                            onSubmit={handleLogin}
+                            className="mt-8 space-y-5"
+                        >
 
+                            {/* EMAIL */}
                             <div>
                                 <label className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
                                     Email
@@ -78,10 +118,15 @@ export default function LoginPage() {
                                 <input
                                     type="email"
                                     placeholder="Enter your email"
+                                    value={email}
+                                    onChange={(e) =>
+                                        setEmail(e.target.value)
+                                    }
                                     className="mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-accent"
                                 />
                             </div>
 
+                            {/* PASSWORD */}
                             <div>
                                 <label className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
                                     Password
@@ -90,10 +135,15 @@ export default function LoginPage() {
                                 <input
                                     type="password"
                                     placeholder="Enter your password"
+                                    value={password}
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
                                     className="mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-accent"
                                 />
                             </div>
 
+                            {/* REMEMBER */}
                             <div className="flex items-center justify-between text-sm">
                                 <label className="flex items-center gap-2 text-muted-foreground">
                                     <input type="checkbox" />
@@ -108,6 +158,7 @@ export default function LoginPage() {
                                 </Link>
                             </div>
 
+                            {/* BUTTON */}
                             <button
                                 type="submit"
                                 className="w-full rounded-xl bg-foreground text-background py-3.5 text-xs font-semibold tracking-[0.25em] uppercase transition hover:opacity-90"
