@@ -9,7 +9,8 @@ import ServicesPage from "./pages/ServicesPage";
 import Login from "./pages/Auth/Login";
 import RegisterCustomer from "./pages/Auth/RegisterCustomer";
 
-// Staff Pages
+// Staff Layout + Pages
+import { StaffLayout } from "./components/staff/StaffLayout";
 import StaffDashboard from "./pages/Staff/StaffDashboard";
 import StaffCustomers from "./pages/Staff/StaffCustomers";
 import StaffSales from "./pages/Staff/StaffSales";
@@ -46,12 +47,14 @@ function App() {
         <Route path="/register" element={<RegisterCustomer />} />
 
         {/* Staff Routes */}
-        <Route path="/staff" element={<StaffDashboard />} />
-        <Route path="/staff/customers" element={<StaffCustomers />} />
-        <Route path="/staff/sales" element={<StaffSales />} />
-        <Route path="/staff/invoices" element={<StaffInvoices />} />
-        <Route path="/staff/search" element={<StaffSearch />} />
-        <Route path="/staff/reports" element={<StaffReports />} />
+        <Route path="/staff" element={<StaffLayout />}>
+          <Route index element={<StaffDashboard />} />
+          <Route path="customers" element={<StaffCustomers />} />
+          <Route path="sales" element={<StaffSales />} />
+          <Route path="invoices" element={<StaffInvoices />} />
+          <Route path="search" element={<StaffSearch />} />
+          <Route path="reports" element={<StaffReports />} />
+        </Route>
 
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminDashboard />} />
