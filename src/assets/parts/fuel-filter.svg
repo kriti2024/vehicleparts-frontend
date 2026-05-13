@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650" role="img" aria-labelledby="title desc">
+  <title id="title">Fuel filter</title>
+  <desc id="desc">Automotive fuel filter product image</desc>
+  <defs>
+    <linearGradient id="body" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#fdfdfb"/>
+      <stop offset=".45" stop-color="#cfd5d8"/>
+      <stop offset="1" stop-color="#5f6970"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" x2="1">
+      <stop offset="0" stop-color="#f2c956"/>
+      <stop offset="1" stop-color="#a87722"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="650" fill="#f5f5f2"/>
+  <ellipse cx="450" cy="508" rx="320" ry="52" fill="#000" opacity=".13"/>
+  <g transform="translate(135 232) rotate(-8 315 95)">
+    <rect x="0" y="70" width="105" height="42" rx="21" fill="url(#gold)"/>
+    <rect x="520" y="70" width="105" height="42" rx="21" fill="url(#gold)"/>
+    <rect x="82" y="34" width="460" height="115" rx="58" fill="url(#body)"/>
+    <rect x="118" y="54" width="116" height="75" rx="22" fill="#f0f2f2" opacity=".65"/>
+    <text x="312" y="105" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="800" fill="#2a3035">FUEL FILTER</text>
+    <path d="M110 45c114-34 310-30 415 8" fill="none" stroke="#fff" stroke-width="10" opacity=".58"/>
+    <path d="M104 136c118 28 313 24 420-8" fill="none" stroke="#58636a" stroke-width="8" opacity=".38"/>
+    <g stroke="#8e681f" stroke-width="7">
+      <path d="M20 77h64M20 105h64M542 77h64M542 105h64"/>
+    </g>
+  </g>
+</svg>

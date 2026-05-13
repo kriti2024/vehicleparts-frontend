@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650" role="img" aria-labelledby="title desc">
+  <title id="title">Tire</title>
+  <desc id="desc">Automotive tire product image</desc>
+  <defs>
+    <radialGradient id="rubber" cx=".38" cy=".3" r=".68">
+      <stop offset="0" stop-color="#555b5e"/>
+      <stop offset=".5" stop-color="#191b1d"/>
+      <stop offset="1" stop-color="#060708"/>
+    </radialGradient>
+    <radialGradient id="rim" cx=".4" cy=".3" r=".7">
+      <stop offset="0" stop-color="#f8f8f8"/>
+      <stop offset=".5" stop-color="#aeb6bc"/>
+      <stop offset="1" stop-color="#333b42"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="650" fill="#f4f4f1"/>
+  <ellipse cx="452" cy="520" rx="290" ry="56" fill="#000" opacity=".16"/>
+  <g transform="translate(248 90)">
+    <circle cx="205" cy="235" r="205" fill="url(#rubber)"/>
+    <circle cx="205" cy="235" r="142" fill="#f4f4f1"/>
+    <circle cx="205" cy="235" r="118" fill="url(#rim)"/>
+    <circle cx="205" cy="235" r="46" fill="#202428"/>
+    <g stroke="#0b0c0d" stroke-width="20" stroke-linecap="round">
+      <path d="M205 40v54"/>
+      <path d="M205 376v54"/>
+      <path d="M10 235h54"/>
+      <path d="M346 235h54"/>
+      <path d="M67 97l38 38"/>
+      <path d="M305 335l38 38"/>
+      <path d="M343 97l-38 38"/>
+      <path d="M105 335l-38 38"/>
+    </g>
+    <g fill="#edf1f3">
+      <path d="M205 130 225 210 205 235 185 210z"/>
+      <path d="M205 340 185 260 205 235 225 260z"/>
+      <path d="M100 235 180 215 205 235 180 255z"/>
+      <path d="M310 235 230 255 205 235 230 215z"/>
+      <path d="M130 160 190 205 205 235 175 220z"/>
+      <path d="M280 310 220 265 205 235 235 250z"/>
+    </g>
+  </g>
+</svg>

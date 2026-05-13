@@ -91,19 +91,19 @@ export default function HomePage() {
                                 icon: Sparkles,
                                 role: "Admin",
                                 desc: "Full control over staff, vendors, parts, purchase invoices and financial reports.",
-                                to: "/admin",
+                                to: "/admin/dashboard",
                             },
                             {
                                 icon: Wrench,
                                 role: "Staff",
                                 desc: "Register customers, sell parts, generate invoices and email them instantly.",
-                                to: "/staff",
+                                to: "/login",
                             },
                             {
                                 icon: Package,
                                 role: "Customer",
                                 desc: "Book appointments, request parts and track service history easily.",
-                                to: "/customer",
+                                to: "/customer/dashboard",
                             },
                         ].map((c) => (
                             <Link

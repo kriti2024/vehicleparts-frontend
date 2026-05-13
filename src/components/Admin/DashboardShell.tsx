@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Bell, LogOut, type LucideIcon } from "lucide-react";
 import { Logo } from "../Logo";
 
@@ -20,6 +20,20 @@ export default function DashboardShell({
     children,
 }: DashboardShellProps) {
     const location = useLocation();
+    const navigate = useNavigate();
+    const notificationPath =
+        nav.find((item) => item.label === "Notifications")?.to
+        ?? nav.find((item) => item.label === "Reports")?.to
+        ?? nav[0]?.to
+        ?? "/";
+    const profilePath =
+        nav.find((item) => item.label === "Profile")?.to
+        ?? nav.find((item) => item.label === "Customers")?.to
+        ?? nav[0]?.to
+        ?? "/";
+    const currentSection =
+        nav.find((item) => item.to === location.pathname)?.label
+        ?? "Workspace";
 
     return (
         <div className="min-h-screen flex bg-[oklch(0.965_0.012_85)] text-[oklch(0.205_0.012_60)]">
@@ -68,21 +82,38 @@ export default function DashboardShell({
             {/* CONTENT */}
             <div className="flex-1 flex flex-col min-w-0">
                 {/* HEADER */}
-                <header className="h-16 border-b border-[oklch(0.88_0.012_80)] bg-[oklch(0.965_0.012_85)] flex items-center justify-between px-6">
-                    <div className="text-[11px] tracking-[0.3em] uppercase text-[oklch(0.5_0.012_70)]">
-                        {role} Dashboard
+                <header className="h-16 border-b border-[oklch(0.88_0.012_80)] bg-[oklch(0.985_0.008_85)]/90 flex items-center justify-between px-6 shadow-[0_12px_30px_-28px_oklch(0.2_0.012_60)]">
+                    <div>
+                        <div className="text-[10px] tracking-[0.3em] uppercase text-[oklch(0.5_0.012_70)]">
+                            {role} Dashboard
+                        </div>
+                        <div className="mt-1 text-sm font-semibold text-[oklch(0.22_0.012_60)]">
+                            ✨ {currentSection}
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <button className="relative h-10 w-10 rounded-full hover:bg-[oklch(0.92_0.014_80)] grid place-items-center transition">
+                        <button
+                            type="button"
+                            onClick={() => navigate(notificationPath)}
+                            aria-label="Open notifications"
+                            title="Open notifications"
+                            className="relative grid h-10 w-10 cursor-pointer place-items-center rounded-full border-0 bg-transparent text-[oklch(0.205_0.012_60)] transition hover:bg-[oklch(0.92_0.014_80)]"
+                        >
                             <Bell className="h-4 w-4" />
 
                             <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[oklch(0.74_0.16_65)]" />
                         </button>
 
-                        <div className="h-10 w-10 rounded-full bg-[oklch(0.205_0.012_60)] text-[oklch(0.97_0.012_85)] grid place-items-center text-sm font-bold">
+                        <button
+                            type="button"
+                            onClick={() => navigate(profilePath)}
+                            aria-label="Open profile"
+                            title="Open profile"
+                            className="grid h-10 w-10 cursor-pointer place-items-center rounded-full border-0 bg-[oklch(0.205_0.012_60)] text-sm font-bold text-[oklch(0.97_0.012_85)] transition hover:opacity-90"
+                        >
                             {role[0]}
-                        </div>
+                        </button>
                     </div>
                 </header>
 

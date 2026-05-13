@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650" role="img" aria-labelledby="title desc">
+  <title id="title">Wiper blade</title>
+  <desc id="desc">Automotive windshield wiper blade product image</desc>
+  <defs>
+    <linearGradient id="rubber" x1="0" x2="1">
+      <stop offset="0" stop-color="#2b3033"/>
+      <stop offset="1" stop-color="#08090a"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" x2="1">
+      <stop offset="0" stop-color="#f4f6f5"/>
+      <stop offset=".5" stop-color="#9fa8ad"/>
+      <stop offset="1" stop-color="#323a40"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="650" fill="#f6f6f3"/>
+  <ellipse cx="450" cy="500" rx="335" ry="48" fill="#000" opacity=".13"/>
+  <g transform="translate(105 260) rotate(-8 345 65)">
+    <rect x="20" y="74" width="660" height="42" rx="21" fill="url(#rubber)"/>
+    <path d="M70 78c150-88 408-98 560-4" fill="none" stroke="url(#metal)" stroke-width="24" stroke-linecap="round"/>
+    <path d="M180 82c34-40 74-42 112 0M360 74c42-44 91-40 130 4" fill="none" stroke="#293038" stroke-width="14" stroke-linecap="round"/>
+    <rect x="318" y="36" width="98" height="70" rx="16" fill="#20262a"/>
+    <rect x="342" y="54" width="50" height="34" rx="8" fill="#c5ccd0"/>
+    <path d="M62 126h590" stroke="#4d565b" stroke-width="8" stroke-linecap="round" opacity=".45"/>
+  </g>
+</svg>

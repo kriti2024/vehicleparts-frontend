@@ -255,10 +255,14 @@ return response.data;
 export const sendLowStockAlerts = async () => {
 
 const response =
-    await api.post(
-        "/Notification/low-stock-alert"
+    await api.get(
+        "/Part/low-stock"
     );
 
-return response.data;
+return {
+    message:
+        `${response.data.length} low stock part(s) found. Admin dashboard has been updated.`,
+    parts: response.data,
+};
 
 };

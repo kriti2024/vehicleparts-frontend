@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650" role="img" aria-labelledby="title desc">
+  <title id="title">Alternator</title>
+  <desc id="desc">Automotive alternator product image</desc>
+  <defs>
+    <radialGradient id="body" cx=".35" cy=".28" r=".75">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".45" stop-color="#b7c0c6"/>
+      <stop offset="1" stop-color="#444d54"/>
+    </radialGradient>
+    <radialGradient id="pulley" cx=".4" cy=".35" r=".7">
+      <stop offset="0" stop-color="#eff3f4"/>
+      <stop offset="1" stop-color="#30383e"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="650" fill="#f6f6f3"/>
+  <ellipse cx="452" cy="506" rx="315" ry="52" fill="#000" opacity=".13"/>
+  <g transform="translate(172 110)">
+    <circle cx="286" cy="230" r="172" fill="url(#body)"/>
+    <circle cx="286" cy="230" r="92" fill="#22282c"/>
+    <circle cx="286" cy="230" r="58" fill="url(#pulley)"/>
+    <circle cx="286" cy="230" r="26" fill="#1b2024"/>
+    <g fill="#1f2529" opacity=".9">
+      <rect x="268" y="62" width="36" height="72" rx="16"/>
+      <rect x="268" y="326" width="36" height="72" rx="16"/>
+      <rect x="118" y="212" width="72" height="36" rx="16"/>
+      <rect x="382" y="212" width="72" height="36" rx="16"/>
+      <rect x="158" y="104" width="62" height="32" rx="15" transform="rotate(-38 189 120)"/>
+      <rect x="352" y="324" width="62" height="32" rx="15" transform="rotate(-38 383 340)"/>
+      <rect x="352" y="104" width="62" height="32" rx="15" transform="rotate(38 383 120)"/>
+      <rect x="158" y="324" width="62" height="32" rx="15" transform="rotate(38 189 340)"/>
+    </g>
+    <path d="M388 93h112c34 0 60 26 60 60v20h-70v-18c0-10-8-18-18-18h-80z" fill="#333b42"/>
+    <path d="M115 305H35c-24 0-43-19-43-43v-45h74v36c0 9 7 16 16 16h48z" fill="#333b42"/>
+    <path d="M175 94c77-42 182-32 246 35" fill="none" stroke="#f8faf9" stroke-width="12" opacity=".55"/>
+  </g>
+</svg>

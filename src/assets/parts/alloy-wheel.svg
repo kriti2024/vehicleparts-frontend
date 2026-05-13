@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650" role="img" aria-labelledby="title desc">
+  <title id="title">Alloy wheel</title>
+  <desc id="desc">Set of polished automotive alloy wheels</desc>
+  <defs>
+    <radialGradient id="rim" cx=".38" cy=".28" r=".72">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".42" stop-color="#b9c0c5"/>
+      <stop offset=".72" stop-color="#555d64"/>
+      <stop offset="1" stop-color="#181b1f"/>
+    </radialGradient>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#25282d"/>
+      <stop offset="1" stop-color="#060708"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="650" fill="url(#bg)"/>
+  <ellipse cx="450" cy="520" rx="360" ry="58" fill="#000" opacity=".45"/>
+  <g transform="translate(72 128)">
+    <g transform="translate(0 50) scale(.86)">
+      <circle cx="170" cy="205" r="158" fill="#1b1d20"/>
+      <circle cx="170" cy="205" r="132" fill="url(#rim)"/>
+      <circle cx="170" cy="205" r="70" fill="#191b1e"/>
+      <g fill="#eef2f4">
+        <path d="M170 82 192 177 170 205 148 177z"/>
+        <path d="M170 328 148 233 170 205 192 233z"/>
+        <path d="M47 205 142 183 170 205 142 227z"/>
+        <path d="M293 205 198 227 170 205 198 183z"/>
+        <path d="M83 118 165 170 170 205 135 200z"/>
+        <path d="M257 292 175 240 170 205 205 210z"/>
+        <path d="M257 118 205 200 170 205 175 170z"/>
+        <path d="M83 292 135 210 170 205 165 240z"/>
+      </g>
+      <circle cx="170" cy="205" r="34" fill="#dfe4e7"/>
+      <circle cx="170" cy="205" r="15" fill="#202327"/>
+    </g>
+    <g transform="translate(236 8)">
+      <circle cx="205" cy="245" r="190" fill="#1b1d20"/>
+      <circle cx="205" cy="245" r="160" fill="url(#rim)"/>
+      <circle cx="205" cy="245" r="78" fill="#191b1e"/>
+      <g fill="#f8fbfc">
+        <path d="M205 88 232 212 205 245 178 212z"/>
+        <path d="M205 402 178 278 205 245 232 278z"/>
+        <path d="M48 245 172 218 205 245 172 272z"/>
+        <path d="M362 245 238 272 205 245 238 218z"/>
+        <path d="M94 134 191 197 205 245 157 231z"/>
+        <path d="M316 356 219 293 205 245 253 259z"/>
+        <path d="M316 134 253 231 205 245 219 197z"/>
+        <path d="M94 356 157 259 205 245 191 293z"/>
+      </g>
+      <circle cx="205" cy="245" r="42" fill="#e7ecef"/>
+      <circle cx="205" cy="245" r="18" fill="#202327"/>
+      <circle cx="205" cy="245" r="178" fill="none" stroke="#d9dee1" stroke-width="7" opacity=".55"/>
+    </g>
+    <g transform="translate(598 68) scale(.82)">
+      <circle cx="170" cy="205" r="158" fill="#1b1d20"/>
+      <circle cx="170" cy="205" r="132" fill="url(#rim)"/>
+      <circle cx="170" cy="205" r="68" fill="#191b1e"/>
+      <g fill="#eef2f4">
+        <path d="M170 82 190 180 170 205 150 180z"/>
+        <path d="M170 328 150 230 170 205 190 230z"/>
+        <path d="M47 205 145 185 170 205 145 225z"/>
+        <path d="M293 205 195 225 170 205 195 185z"/>
+        <path d="M83 118 162 172 170 205 137 198z"/>
+        <path d="M257 292 178 238 170 205 203 212z"/>
+        <path d="M257 118 203 198 170 205 178 172z"/>
+        <path d="M83 292 137 212 170 205 162 238z"/>
+      </g>
+      <circle cx="170" cy="205" r="34" fill="#dfe4e7"/>
+      <circle cx="170" cy="205" r="15" fill="#202327"/>
+    </g>
+  </g>
+</svg>

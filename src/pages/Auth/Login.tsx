@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Logo } from "../../components/Logo";
 import heroCar from "../../assets/hero-car.jpg";
 import { useState } from "react";
@@ -7,20 +7,29 @@ import { useAuth } from "../../context/useAuth";
 export default function LoginPage() {
 
     const navigate = useNavigate();
+    const location = useLocation();
     const { login } = useAuth();
 
-    const [email, setEmail] = useState("");
+    const registeredEmail =
+        (location.state as { registeredEmail?: string } | null)
+            ?.registeredEmail ?? "";
+
+    const [email, setEmail] = useState(registeredEmail);
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [submitting, setSubmitting] = useState(false);
 
     const handleLogin = async (
         e: React.FormEvent
     ) => {
         e.preventDefault();
+        setSubmitting(true);
+        setError("");
 
         try {
 
             const user = await login(
-                email,
+                email.trim(),
                 password
             );
 
@@ -34,8 +43,14 @@ export default function LoginPage() {
                 navigate("/customer/dashboard");
             }
 
-        } catch {
-            alert("Invalid email or password");
+        } catch (err) {
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "Unable to sign in. Please try again."
+            );
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -101,13 +116,24 @@ export default function LoginPage() {
                         </h2>
 
                         <p className="mt-3 text-muted-foreground">
-                            Enter your credentials to continue.
+                            Use the email and password from your registered account.
                         </p>
+
+                        {registeredEmail && (
+                            <div className="mt-5 rounded-2xl border border-[oklch(0.84_0.1_130)] bg-[oklch(0.94_0.05_130)] px-4 py-3 text-sm font-medium">
+                                Account created. Sign in to continue.
+                            </div>
+                        )}
 
                         <form
                             onSubmit={handleLogin}
                             className="mt-8 space-y-5"
                         >
+                            {error && (
+                                <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                                    {error}
+                                </div>
+                            )}
 
                             {/* EMAIL */}
                             <div>
@@ -122,6 +148,7 @@ export default function LoginPage() {
                                     onChange={(e) =>
                                         setEmail(e.target.value)
                                     }
+                                    required
                                     className="mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-accent"
                                 />
                             </div>
@@ -139,6 +166,7 @@ export default function LoginPage() {
                                     onChange={(e) =>
                                         setPassword(e.target.value)
                                     }
+                                    required
                                     className="mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-accent"
                                 />
                             </div>
@@ -161,14 +189,15 @@ export default function LoginPage() {
                             {/* BUTTON */}
                             <button
                                 type="submit"
+                                disabled={submitting}
                                 className="w-full rounded-xl bg-foreground text-background py-3.5 text-xs font-semibold tracking-[0.25em] uppercase transition hover:opacity-90"
                             >
-                                Sign In
+                                {submitting ? "Signing In..." : "Sign In"}
                             </button>
                         </form>
 
                         <p className="mt-8 text-center text-sm text-muted-foreground">
-                            Don’t have an account?{" "}
+                            Don't have an account?{" "}
                             <Link
                                 to="/register"
                                 className="text-accent hover:underline"
@@ -182,3 +211,4 @@ export default function LoginPage() {
         </div>
     );
 }
+

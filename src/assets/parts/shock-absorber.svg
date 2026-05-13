@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650" role="img" aria-labelledby="title desc">
+  <title id="title">Shock absorber</title>
+  <desc id="desc">Automotive shock absorber and strut product image</desc>
+  <defs>
+    <linearGradient id="steel" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#fafafa"/>
+      <stop offset=".5" stop-color="#aeb7bd"/>
+      <stop offset="1" stop-color="#4d555b"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" x2="1">
+      <stop offset="0" stop-color="#d83a32"/>
+      <stop offset="1" stop-color="#7b1515"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="650" fill="#f5f5f2"/>
+  <ellipse cx="452" cy="514" rx="300" ry="50" fill="#000" opacity=".13"/>
+  <g transform="translate(300 72) rotate(10 145 250)">
+    <rect x="122" y="0" width="46" height="145" rx="20" fill="url(#steel)"/>
+    <rect x="96" y="120" width="98" height="238" rx="42" fill="url(#red)"/>
+    <rect x="116" y="338" width="58" height="116" rx="22" fill="url(#steel)"/>
+    <circle cx="145" cy="492" r="54" fill="#22282c"/>
+    <circle cx="145" cy="492" r="27" fill="#e9eeee"/>
+    <circle cx="145" cy="42" r="38" fill="#22282c"/>
+    <circle cx="145" cy="42" r="18" fill="#e9eeee"/>
+    <path d="M90 155h110M88 205h114M92 255h106M98 305h94" stroke="#f2a025" stroke-width="12" stroke-linecap="round"/>
+    <path d="M130 18c-82 135-78 315 28 452" fill="none" stroke="#6c757b" stroke-width="14" opacity=".38"/>
+  </g>
+</svg>
