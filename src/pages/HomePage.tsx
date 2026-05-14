@@ -21,7 +21,7 @@ export default function HomePage() {
 
                 <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6 pt-32">
                     <div className="text-[11px] tracking-[0.35em] uppercase text-[oklch(0.205_0.012_60)]/60 mb-6">
-                        Limited Edition · Service Center
+                        Vehicle Parts - Service Center
                     </div>
 
                     <h1 className="font-black tracking-tighter text-[oklch(0.205_0.012_60)] text-[18vw] md:text-[8rem] leading-[0.82]">
@@ -55,16 +55,16 @@ export default function HomePage() {
                     </div>
                 </div>
 
-                {/* STATS */}
+                {/* SYSTEM AREAS */}
                 <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-px bg-[oklch(0.88_0.012_80)] border-t border-[oklch(0.88_0.012_80)]">
                     {[
-                        { v: "1,847", l: "Parts in stock" },
-                        { v: "99.9%", l: "Service rating" },
-                        { v: "0.8s", l: "Invoice generation" },
-                        { v: "15K+", l: "Happy customers" },
+                        { v: "Inventory", l: "Live stock and vendors" },
+                        { v: "Invoices", l: "Sales and purchase records" },
+                        { v: "Service", l: "Bookings and customer history" },
+                        { v: "Credits", l: "Overdue payment reminders" },
                     ].map((s) => (
                         <div key={s.l} className="bg-[oklch(0.965_0.012_85)] px-6 py-8">
-                            <div className="text-3xl font-bold text-[oklch(0.205_0.012_60)]">{s.v}</div>
+                            <div className="text-2xl font-bold text-[oklch(0.205_0.012_60)]">{s.v}</div>
                             <div className="text-[10px] tracking-[0.25em] uppercase text-[oklch(0.5_0.012_70)] mt-2">{s.l}</div>
                         </div>
                     ))}
@@ -145,7 +145,7 @@ export default function HomePage() {
 
                         <p className="mt-6 text-[oklch(0.5_0.012_70)] leading-relaxed text-lg">
                             From low-stock alerts under 10 units to overdue credit reminders
-                            past 30 days — automation handles the busywork so your team
+                            past 30 days, automation handles the busywork so your team
                             focuses on customers.
                         </p>
                     </div>
@@ -163,7 +163,7 @@ export default function HomePage() {
                                 className="flex items-start gap-4 border-b border-[oklch(0.88_0.012_80)] pb-5"
                             >
                                 <div className="h-7 w-7 rounded-full bg-[oklch(0.74_0.16_65)] text-[oklch(0.18_0.012_60)] grid place-items-center text-xs font-bold shrink-0 mt-0.5">
-                                    ✓
+                                    OK
                                 </div>
                                 <span className="text-base text-[oklch(0.205_0.012_60)]">{f}</span>
                             </div>

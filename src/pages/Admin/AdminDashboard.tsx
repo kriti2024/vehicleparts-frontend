@@ -3,6 +3,8 @@ import {
     getReportSummary,
     getLowStockParts,
     getMonthlyRevenue,
+    getAdminNotifications,
+    type AdminNotification,
     type ReportSummary,
 } from "../../api/admin";
 import DashboardShell from "../../components/Admin/DashboardShell";
@@ -25,6 +27,7 @@ import {
     Users,
     FileText,
     BarChart3,
+    Bell,
 } from "lucide-react";
 
 const adminNav = [
@@ -74,6 +77,21 @@ const emptySummary = {
     yearlyInvoices: 0,
 };
 
+const months = [
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
+];
+
 export default function AdminDashboard() {
 
     type LowStockPart = {
@@ -96,6 +114,9 @@ export default function AdminDashboard() {
     const [revenueData, setRevenueData] =
         useState<RevenueData[]>([]);
 
+    const [notifications, setNotifications] =
+        useState<AdminNotification[]>([]);
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -106,24 +127,60 @@ export default function AdminDashboard() {
                 setError("");
 
                 const [
-                    summaryData,
-                    lowStockData,
-                    monthlyRevenueData,
-                ] = await Promise.all([
+                    summaryResult,
+                    lowStockResult,
+                    monthlyRevenueResult,
+                    notificationResult,
+                ] = await Promise.allSettled([
                     getReportSummary(),
                     getLowStockParts(),
                     getMonthlyRevenue(),
+                    getAdminNotifications(),
                 ]);
 
-                setSummary(summaryData ?? emptySummary);
-                setLowStock(lowStockData);
-                setRevenueData(monthlyRevenueData);
+                setSummary(
+                    summaryResult.status === "fulfilled"
+                        ? summaryResult.value ?? emptySummary
+                        : emptySummary
+                );
+
+                setLowStock(
+                    lowStockResult.status === "fulfilled"
+                        ? lowStockResult.value
+                        : []
+                );
+
+                setRevenueData(
+                    monthlyRevenueResult.status === "fulfilled"
+                        ? monthlyRevenueResult.value
+                        : months.map((month) => ({ month, sales: 0 }))
+                );
+
+                setNotifications(
+                    notificationResult.status === "fulfilled"
+                        ? notificationResult.value
+                        : []
+                );
+
+                const failedRequests = [
+                    summaryResult,
+                    lowStockResult,
+                    monthlyRevenueResult,
+                    notificationResult,
+                ].filter((result) => result.status === "rejected");
+
+                if (failedRequests.length > 0) {
+                    setError(
+                        "Some live dashboard data could not be loaded. Sign in with the backend admin account and make sure the backend is running."
+                    );
+                }
 
             } catch (error) {
                 console.error(error);
                 setSummary(emptySummary);
                 setLowStock([]);
                 setRevenueData([]);
+                setNotifications([]);
                 setError("Dashboard data could not be loaded from the backend.");
             }
 
@@ -293,6 +350,35 @@ export default function AdminDashboard() {
 
                                 ))
 
+                            )}
+                        </div>
+                    </DataCard>
+                </div>
+
+                <div className="mt-8">
+                    <DataCard title="Admin Notifications">
+                        <div className="space-y-3">
+                            {notifications.length === 0 ? (
+                                <div className="text-sm text-[oklch(0.5_0.012_70)]">
+                                    No admin notifications.
+                                </div>
+                            ) : (
+                                notifications.map((notification) => (
+                                    <div
+                                        key={notification.notificationId}
+                                        className="flex items-start gap-3 rounded-2xl bg-[oklch(0.94_0.01_80)] p-4"
+                                    >
+                                        <Bell className="mt-0.5 h-4 w-4 text-[oklch(0.58_0.16_75)]" />
+                                        <div>
+                                            <div className="text-sm font-medium">
+                                                {notification.message}
+                                            </div>
+                                            <div className="mt-1 text-xs text-[oklch(0.5_0.012_70)]">
+                                                {new Date(notification.createdAt).toLocaleString()}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
                             )}
                         </div>
                     </DataCard>

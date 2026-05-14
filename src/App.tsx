@@ -28,6 +28,7 @@ import VendorsPage from "./pages/Admin/Vendors";
 import InvoicesPage from "./pages/Admin/Invoices";
 import ReportsPage from "./pages/Admin/Reports";
 import CustomersPage from "./pages/Admin/Customers";
+import NotificationsPage from "./pages/Admin/Notifications";
 import AddPart from "./pages/Admin/AddPart";
 import EditPart from "./pages/Admin/EditPart";
 import AddVendor from "./pages/Admin/AddVendor";
@@ -37,6 +38,7 @@ import EditStaff from "./pages/Admin/EditStaff";
 import CreatePurchaseInvoice from "./pages/Admin/CreatePurchaseInvoice";
 
 import CustomerDashboard from "./pages/Customer/CustomerDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
     return (
@@ -64,22 +66,23 @@ function App() {
                     <Route path="reports" element={<StaffReports />} />
                 </Route>
 
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                <Route path="/admin/staff" element={<StaffPage />} />
-                <Route path="/admin/staff/add" element={<AddStaff />} />
-                <Route path="/admin/staff/edit/:id" element={<EditStaff />} />
-                <Route path="/admin/parts" element={<PartsPage />} />
-                <Route path="/admin/parts/add" element={<AddPart />} />
-                <Route path="/admin/parts/edit/:id" element={<EditPart />} />
-                <Route path="/admin/vendors" element={<VendorsPage />} />
-                <Route path="/admin/vendors/add" element={<AddVendor />} />
-                <Route path="/admin/vendors/edit/:id" element={<EditVendor />} />
-                <Route path="/admin/invoices" element={<InvoicesPage />} />
-                <Route path="/admin/invoices/create" element={<CreatePurchaseInvoice />} />
-                <Route path="/admin/purchase-invoice" element={<CreatePurchaseInvoice />} />
-                <Route path="/admin/reports" element={<ReportsPage />} />
-                <Route path="/admin/customers" element={<CustomersPage />} />
+                <Route path="/admin" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminDashboard /></ProtectedRoute>} />
+                <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={["Admin"]}><AdminDashboard /></ProtectedRoute>} />
+                <Route path="/admin/staff" element={<ProtectedRoute allowedRoles={["Admin"]}><StaffPage /></ProtectedRoute>} />
+                <Route path="/admin/staff/add" element={<ProtectedRoute allowedRoles={["Admin"]}><AddStaff /></ProtectedRoute>} />
+                <Route path="/admin/staff/edit/:id" element={<ProtectedRoute allowedRoles={["Admin"]}><EditStaff /></ProtectedRoute>} />
+                <Route path="/admin/parts" element={<ProtectedRoute allowedRoles={["Admin"]}><PartsPage /></ProtectedRoute>} />
+                <Route path="/admin/parts/add" element={<ProtectedRoute allowedRoles={["Admin"]}><AddPart /></ProtectedRoute>} />
+                <Route path="/admin/parts/edit/:id" element={<ProtectedRoute allowedRoles={["Admin"]}><EditPart /></ProtectedRoute>} />
+                <Route path="/admin/vendors" element={<ProtectedRoute allowedRoles={["Admin"]}><VendorsPage /></ProtectedRoute>} />
+                <Route path="/admin/vendors/add" element={<ProtectedRoute allowedRoles={["Admin"]}><AddVendor /></ProtectedRoute>} />
+                <Route path="/admin/vendors/edit/:id" element={<ProtectedRoute allowedRoles={["Admin"]}><EditVendor /></ProtectedRoute>} />
+                <Route path="/admin/invoices" element={<ProtectedRoute allowedRoles={["Admin"]}><InvoicesPage /></ProtectedRoute>} />
+                <Route path="/admin/invoices/create" element={<ProtectedRoute allowedRoles={["Admin"]}><CreatePurchaseInvoice /></ProtectedRoute>} />
+                <Route path="/admin/purchase-invoice" element={<ProtectedRoute allowedRoles={["Admin"]}><CreatePurchaseInvoice /></ProtectedRoute>} />
+                <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={["Admin"]}><ReportsPage /></ProtectedRoute>} />
+                <Route path="/admin/customers" element={<ProtectedRoute allowedRoles={["Admin"]}><CustomersPage /></ProtectedRoute>} />
+                <Route path="/admin/notifications" element={<ProtectedRoute allowedRoles={["Admin"]}><NotificationsPage /></ProtectedRoute>} />
 
                 {[
                     "/customer/dashboard",
