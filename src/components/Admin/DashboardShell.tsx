@@ -1,6 +1,8 @@
+import type { ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Bell, LogOut, type LucideIcon } from "lucide-react";
 import { Logo } from "../Logo";
+import { useAuth } from "../../context/useAuth";
 
 export type NavItem = {
     to: string;
@@ -11,7 +13,7 @@ export type NavItem = {
 type DashboardShellProps = {
     role: "Admin" | "Staff" | "Customer";
     nav: NavItem[];
-    children: React.ReactNode;
+    children: ReactNode;
 };
 
 export default function DashboardShell({
@@ -21,8 +23,10 @@ export default function DashboardShell({
 }: DashboardShellProps) {
     const location = useLocation();
     const navigate = useNavigate();
+    const { logout } = useAuth();
     const notificationPath =
         nav.find((item) => item.label === "Notifications")?.to
+        ?? (role === "Admin" ? "/admin/notifications" : undefined)
         ?? nav.find((item) => item.label === "Reports")?.to
         ?? nav[0]?.to
         ?? "/";
@@ -83,13 +87,17 @@ export default function DashboardShell({
                             Sales, service, credits, and stock
                         </div>
                     </div>
-                    <Link
-                        to="/"
+                    <button
+                        type="button"
+                        onClick={() => {
+                            logout();
+                            navigate("/login");
+                        }}
                         className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-[oklch(0.92_0.012_80)]/70 hover:bg-[oklch(0.92_0.012_80)]/10 transition"
                     >
                         <LogOut className="h-4 w-4" />
                         Sign Out
-                    </Link>
+                    </button>
                 </div>
             </aside>
 
@@ -102,7 +110,7 @@ export default function DashboardShell({
                             {role} Dashboard
                         </div>
                         <div className="mt-1 text-sm font-semibold text-[oklch(0.22_0.012_60)]">
-                            ✨ {currentSection}
+                            {currentSection}
                         </div>
                     </div>
 

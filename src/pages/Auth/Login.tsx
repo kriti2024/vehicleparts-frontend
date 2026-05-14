@@ -142,7 +142,9 @@ export default function LoginPage() {
                                 </label>
 
                                 <input
-                                    type="email"
+                                    type="text"
+                                    inputMode="email"
+                                    autoComplete="email"
                                     placeholder="Enter your email"
                                     value={email}
                                     onChange={(e) =>

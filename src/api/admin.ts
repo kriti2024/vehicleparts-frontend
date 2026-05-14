@@ -15,6 +15,16 @@ export type MonthlyRevenue = {
     invoices: number;
 };
 
+export type AdminNotification = {
+    notificationId: number;
+    message: string;
+    type: string;
+    createdAt: string;
+    isRead: boolean;
+    partId?: number;
+    partName?: string;
+};
+
 export const getReportSummary = async () => {
 
     const response =
@@ -72,6 +82,25 @@ export const getLowStockParts = async () => {
     );
 
     return response.data;
+};
+
+export const getAdminNotifications = async () => {
+
+    const response =
+        await api.get<AdminNotification[]>(
+            "/Notification"
+        );
+
+    return response.data;
+};
+
+export const markNotificationRead = async (
+    id: number
+) => {
+
+    await api.put(
+        `/Notification/${id}/read`
+    );
 };
 
 export const getAllParts = async () => {
@@ -280,14 +309,10 @@ return response.data;
 export const sendLowStockAlerts = async () => {
 
 const response =
-    await api.get(
-        "/Part/low-stock"
+    await api.post(
+        "/Notification/process-low-stock"
     );
 
-return {
-    message:
-        `${response.data.length} low stock part(s) found. Admin dashboard has been updated.`,
-    parts: response.data,
-};
+return response.data;
 
 };

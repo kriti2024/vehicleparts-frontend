@@ -10,6 +10,23 @@ const STORAGE_KEY = "vehicle_user";
 const TOKEN_KEY = "token";
 const LOCAL_AUTH_KEY = "axleworks_auth_users";
 
+const isUsableBackendToken = (token?: string) => {
+    if (!token || token.split(".").length !== 3) {
+        return false;
+    }
+
+    try {
+        const [, payload] = token.split(".");
+        const decoded = JSON.parse(atob(payload)) as {
+            exp?: number;
+        };
+
+        return !decoded.exp || decoded.exp * 1000 > Date.now();
+    } catch {
+        return false;
+    }
+};
+
 const readCustomerId = (token: string) => {
     try {
         const [, payload] = token.split(".");
@@ -64,7 +81,15 @@ export default function AuthProvider({
         if (!saved) return null;
 
         try {
-            return JSON.parse(saved) as User;
+            const parsed = JSON.parse(saved) as User;
+
+            if (!isUsableBackendToken(parsed.token)) {
+                localStorage.removeItem(STORAGE_KEY);
+                localStorage.removeItem(TOKEN_KEY);
+                return null;
+            }
+
+            return parsed;
         } catch {
             return null;
         }
@@ -93,6 +118,10 @@ export default function AuthProvider({
                     normalizedEmail,
                     password
                 );
+
+                if (loggedUser.roles.includes("Admin") || loggedUser.roles.includes("Staff")) {
+                    throw new Error("Admin and staff accounts must sign in through the backend.");
+                }
             } catch {
                 if (axios.isAxiosError(error) && error.response) {
                     throw new Error(

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { CreditCard, FileText, Plus, ReceiptText, Send, ShoppingCart, Trash2 } from "lucide-react";
 
 import {
@@ -109,7 +109,7 @@ export default function StaffSales() {
     setQuantity("1");
   };
 
-  const handleCreateSale = async (event: React.FormEvent) => {
+  const handleCreateSale = async (event: FormEvent) => {
     event.preventDefault();
 
     if (!customerId) {
