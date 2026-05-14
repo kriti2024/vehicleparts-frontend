@@ -16,6 +16,10 @@ import {
 import { getInvoiceBySaleId } from "../../api/invoiceApi";
 import type { Invoice } from "../../types/invoice";
 
+const getInvoiceTotal = (invoice: Invoice) => invoice.totalAmount ?? invoice.subTotal ?? 0;
+const getInvoiceFinal = (invoice: Invoice) => invoice.finalAmount ?? invoice.totalAmount ?? invoice.subTotal ?? 0;
+const getInvoiceDate = (invoice: Invoice) => invoice.createdAt ?? invoice.invoiceDate;
+
 export default function StaffInvoices() {
   const [searchParams] = useSearchParams();
   const [saleId, setSaleId] = useState(searchParams.get("saleId") ?? "");
@@ -78,7 +82,7 @@ export default function StaffInvoices() {
 
   const emailHref = invoice
     ? `mailto:${customerEmail}?subject=${encodeURIComponent(`Invoice ${invoice.invoiceNumber || `sale #${invoice.saleId || saleId}`}`)}&body=${encodeURIComponent(
-        `Dear ${invoice.customerName || "Customer"},\n\nYour invoice is ready.\nInvoice: ${invoice.invoiceNumber || "-"}\nSale ID: ${invoice.saleId || saleId}\nTotal: Rs. ${invoice.totalAmount ?? "-"}\nDiscount: Rs. ${invoice.discountAmount ?? 0}\nFinal Amount: Rs. ${invoice.finalAmount ?? invoice.totalAmount ?? "-"}\n\nThank you.`,
+        `Dear ${invoice.customerName || "Customer"},\n\nYour invoice is ready.\nInvoice: ${invoice.invoiceNumber || "-"}\nSale ID: ${invoice.saleId || saleId}\nTotal: Rs. ${getInvoiceTotal(invoice)}\nDiscount: Rs. ${invoice.discountAmount ?? 0}\nFinal Amount: Rs. ${getInvoiceFinal(invoice)}\n\nThank you.`,
       )}`
     : "";
 
@@ -87,10 +91,10 @@ export default function StaffInvoices() {
         `Invoice: ${invoice.invoiceNumber || "-"}`,
         `Sale ID: ${invoice.saleId || saleId}`,
         `Customer: ${invoice.customerName || "-"}`,
-        `Created: ${invoice.createdAt ? new Date(invoice.createdAt).toLocaleString() : "-"}`,
-        `Total: Rs. ${invoice.totalAmount ?? "-"}`,
+        `Created: ${getInvoiceDate(invoice) ? new Date(getInvoiceDate(invoice)!).toLocaleString() : "-"}`,
+        `Total: Rs. ${getInvoiceTotal(invoice)}`,
         `Discount: Rs. ${invoice.discountAmount ?? 0}`,
-        `Final Amount: Rs. ${invoice.finalAmount ?? invoice.totalAmount ?? "-"}`,
+        `Final Amount: Rs. ${getInvoiceFinal(invoice)}`,
       ].join("\n")
     : "";
 
@@ -156,10 +160,10 @@ export default function StaffInvoices() {
 
               <div className="grid md:grid-cols-2 gap-3">
                 <DetailRow label="Customer" value={invoice.customerName || "-"} strong />
-                <DetailRow label="Created" value={invoice.createdAt ? new Date(invoice.createdAt).toLocaleString() : "-"} />
-                <DetailRow label="Total Amount" value={`Rs. ${invoice.totalAmount ?? "-"}`} />
+                <DetailRow label="Created" value={getInvoiceDate(invoice) ? new Date(getInvoiceDate(invoice)!).toLocaleString() : "-"} />
+                <DetailRow label="Total Amount" value={`Rs. ${getInvoiceTotal(invoice)}`} />
                 <DetailRow label="Discount" value={`Rs. ${invoice.discountAmount ?? 0}`} />
-                <DetailRow label="Final Amount" value={`Rs. ${invoice.finalAmount ?? invoice.totalAmount ?? "-"}`} strong />
+                <DetailRow label="Final Amount" value={`Rs. ${getInvoiceFinal(invoice)}`} strong />
               </div>
 
               <div className="grid md:grid-cols-[1fr_auto] gap-4 items-end rounded-3xl bg-[oklch(0.94_0.01_80)] p-5">

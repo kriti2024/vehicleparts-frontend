@@ -27,6 +27,8 @@ import { getCustomerSales } from "../../api/salesApi";
 import type { Customer, CustomerWithVehicles } from "../../types/customer";
 import type { Sale } from "../../types/sale";
 
+const getSaleValue = (sale: Sale) => sale.finalAmount ?? sale.totalAmount ?? sale.subTotal ?? 0;
+
 const blankCustomer = {
   fullName: "",
   phone: "",
@@ -250,7 +252,7 @@ export default function StaffCustomers() {
   };
 
   const totalSpent = salesHistory.reduce(
-    (sum, sale) => sum + (sale.finalAmount ?? sale.totalAmount ?? 0),
+    (sum, sale) => sum + getSaleValue(sale),
     0,
   );
 
@@ -407,7 +409,7 @@ export default function StaffCustomers() {
                     <DetailRow
                       key={sale.saleId}
                       label={`Sale #${sale.saleId}`}
-                      value={`Rs. ${sale.finalAmount ?? sale.totalAmount ?? 0}`}
+                      value={`Rs. ${getSaleValue(sale)}`}
                       strong
                     />
                   ))

@@ -20,6 +20,8 @@ import { getCustomerSales } from "../../api/salesApi";
 import type { Customer, CustomerWithVehicles } from "../../types/customer";
 import type { Sale } from "../../types/sale";
 
+const getSaleValue = (sale: Sale) => sale.finalAmount ?? sale.totalAmount ?? sale.subTotal ?? 0;
+
 export default function StaffSearch() {
   const [keyword, setKeyword] = useState("");
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -31,7 +33,7 @@ export default function StaffSearch() {
   const [message, setMessage] = useState("");
 
   const totalSpent = useMemo(
-    () => salesHistory.reduce((sum, sale) => sum + (sale.finalAmount ?? sale.totalAmount ?? 0), 0),
+    () => salesHistory.reduce((sum, sale) => sum + getSaleValue(sale), 0),
     [salesHistory],
   );
 

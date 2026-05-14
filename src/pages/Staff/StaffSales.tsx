@@ -23,6 +23,9 @@ import { createSale } from "../../api/salesApi";
 import type { Customer } from "../../types/customer";
 import type { Sale, SaleItemRequest } from "../../types/sale";
 
+const getSaleTotal = (sale: Sale) => sale.totalAmount ?? sale.subTotal ?? 0;
+const getSaleFinal = (sale: Sale) => sale.finalAmount ?? sale.totalAmount ?? sale.subTotal ?? 0;
+
 export default function StaffSales() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [parts, setParts] = useState<PartOption[]>([]);
@@ -65,7 +68,7 @@ export default function StaffSales() {
     () =>
       customers.map((c) => ({
         value: String(c.customerId),
-        label: `${c.fullName} — ${c.phone}`,
+        label: `${c.fullName} - ${c.phone}`,
       })),
     [customers]
   );
@@ -74,7 +77,7 @@ export default function StaffSales() {
     () =>
       parts.map((p) => ({
         value: String(p.partId),
-        label: `#${p.partId} · ${p.partName} — Rs.${p.price} (Stock: ${p.stockQuantity})`,
+        label: `#${p.partId} - ${p.partName} - Rs.${p.price} (Stock: ${p.stockQuantity})`,
       })),
     [parts]
   );
@@ -132,7 +135,7 @@ export default function StaffSales() {
       setCreatedSale(sale);
       setItems([]);
       setMessage(
-        `Sale #${sale.saleId} created successfully! Rs. ${sale.finalAmount ?? sale.totalAmount ?? "-"} — Invoice ready.`
+        `Sale #${sale.saleId} created successfully. Rs. ${getSaleFinal(sale)} - invoice ready.`
       );
     } catch (err: unknown) {
       const msg =
@@ -145,7 +148,7 @@ export default function StaffSales() {
 
   const emailHref = createdSale
     ? `mailto:${selectedCustomer?.email ?? ""}?subject=${encodeURIComponent(`Invoice for sale #${createdSale.saleId}`)}&body=${encodeURIComponent(
-        `Dear ${selectedCustomer?.fullName ?? "Customer"},\n\nYour sales invoice is ready.\nSale ID: ${createdSale.saleId}\nPayment: ${paymentStatus} via ${paymentMethod}\nFinal Amount: Rs. ${createdSale.finalAmount ?? createdSale.totalAmount ?? "-"}\n\nThank you.`
+        `Dear ${selectedCustomer?.fullName ?? "Customer"},\n\nYour sales invoice is ready.\nSale ID: ${createdSale.saleId}\nPayment: ${paymentStatus} via ${paymentMethod}\nFinal Amount: Rs. ${getSaleFinal(createdSale)}\n\nThank you.`
       )}`
     : "";
 
@@ -182,7 +185,7 @@ export default function StaffSales() {
               value={customerId}
               options={customerOptions}
               onChange={setCustomerId}
-              placeholder={loading ? "Loading customers…" : customers.length === 0 ? "No customers found — register one first" : "Select customer"}
+              placeholder={loading ? "Loading customers..." : customers.length === 0 ? "No customers found - register one first" : "Select customer"}
             />
 
             {/* Part + Quantity row */}
@@ -192,7 +195,7 @@ export default function StaffSales() {
                 value={selectedPartId}
                 options={partOptions}
                 onChange={setSelectedPartId}
-                placeholder={loading ? "Loading parts…" : parts.length === 0 ? "No parts in stock" : "Select part"}
+                placeholder={loading ? "Loading parts..." : parts.length === 0 ? "No parts in stock" : "Select part"}
               />
               <Field
                 label="Qty"
@@ -209,7 +212,7 @@ export default function StaffSales() {
             {/* Show selected part price info */}
             {selectedPart && (
               <p className="text-xs text-[oklch(0.42_0.05_65)] font-semibold">
-                Unit price: Rs. {selectedPart.price} &nbsp;·&nbsp; Stock: {selectedPart.stockQuantity}
+                Unit price: Rs. {selectedPart.price} - Stock: {selectedPart.stockQuantity}
               </p>
             )}
 
@@ -281,7 +284,7 @@ export default function StaffSales() {
             )}
 
             <PrimaryButton disabled={saving || loading} icon={ShoppingCart}>
-              {saving ? "Creating…" : "Create Sale"}
+              {saving ? "Creating..." : "Create Sale"}
             </PrimaryButton>
           </form>
         </DataCard>
@@ -302,10 +305,10 @@ export default function StaffSales() {
               </div>
 
               <DetailRow label="Customer" value={createdSale.customerName || selectedCustomer?.fullName || customerId} strong />
-              <DetailRow label="Total Amount" value={`Rs. ${createdSale.totalAmount ?? "-"}`} />
+              <DetailRow label="Total Amount" value={`Rs. ${getSaleTotal(createdSale)}`} />
               <DetailRow label="Discount" value={`Rs. ${createdSale.discountAmount ?? 0}`} />
-              <DetailRow label="Final Amount" value={`Rs. ${createdSale.finalAmount ?? createdSale.totalAmount ?? "-"}`} strong />
-              <DetailRow label="Payment" value={`${paymentStatus} — ${paymentMethod}`} strong />
+              <DetailRow label="Final Amount" value={`Rs. ${getSaleFinal(createdSale)}`} strong />
+              <DetailRow label="Payment" value={`${paymentStatus} - ${paymentMethod}`} strong />
               {saleNote && <DetailRow label="Note" value={saleNote} />}
 
               <div className="flex flex-wrap gap-3 pt-2">
