@@ -33,9 +33,15 @@ const blankCustomer = {
   fullName: "",
   phone: "",
   email: "",
+  password: "",
   vehicleNumber: "",
   model: "",
 };
+
+const passwordHelp =
+  "Use at least 6 characters with uppercase, lowercase, number, and symbol.";
+
+const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/;
 
 type FollowUp = {
   id: string;
@@ -186,6 +192,14 @@ export default function StaffCustomers() {
       setError("Phone number is required.");
       return;
     }
+    if (!form.email.trim()) {
+      setError("Email is required so the customer can log in.");
+      return;
+    }
+    if (!passwordPattern.test(form.password)) {
+      setError(passwordHelp);
+      return;
+    }
 
     try {
       setSaving(true);
@@ -195,7 +209,8 @@ export default function StaffCustomers() {
       const customer = await createCustomer({
         fullName: form.fullName.trim(),
         phone: form.phone.trim(),
-        email: form.email.trim() || undefined,
+        email: form.email.trim(),
+        password: form.password,
       });
 
       if (form.vehicleNumber && form.model) {
@@ -306,7 +321,8 @@ export default function StaffCustomers() {
           <form onSubmit={handleCreateCustomer} className="grid md:grid-cols-2 gap-5">
             <Field label="Full Name" value={form.fullName} onChange={(value) => setForm({ ...form, fullName: value })} placeholder="Enter customer name" />
             <Field label="Phone" value={form.phone} onChange={(value) => setForm({ ...form, phone: value })} placeholder="Enter phone number" />
-            <Field label="Email" type="email" required={false} value={form.email} onChange={(value) => setForm({ ...form, email: value })} placeholder="customer@email.com" />
+            <Field label="Email" type="email" value={form.email} onChange={(value) => setForm({ ...form, email: value })} placeholder="customer@email.com" />
+            <Field label="Password" type="password" value={form.password} onChange={(value) => setForm({ ...form, password: value })} placeholder={passwordHelp} />
             <Field label="Vehicle Number" value={form.vehicleNumber} onChange={(value) => setForm({ ...form, vehicleNumber: value })} placeholder="BA 12 PA 1234" />
             <Field label="Vehicle Model" value={form.model} onChange={(value) => setForm({ ...form, model: value })} placeholder="Toyota Corolla" />
             <div className="flex items-end">
