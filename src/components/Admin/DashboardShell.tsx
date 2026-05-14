@@ -46,7 +46,10 @@ export default function DashboardShell({
                 </div>
 
                 {/* NAVIGATION */}
-                <nav className="flex-1 px-4 py-6 space-y-2">
+                <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2">
+                    <div className="px-4 pb-2 text-[10px] font-semibold uppercase tracking-[0.24em] text-[oklch(0.92_0.012_80)]/35">
+                        Workspace
+                    </div>
                     {nav.map((item) => {
                         const active = location.pathname === item.to;
                         const Icon = item.icon;
@@ -56,7 +59,7 @@ export default function DashboardShell({
                                 key={item.to}
                                 to={item.to}
                                 className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition-all duration-200 ${active
-                                    ? "bg-[oklch(0.74_0.16_65)] text-[oklch(0.18_0.012_60)] font-semibold"
+                                    ? "bg-[oklch(0.74_0.16_65)] text-[oklch(0.18_0.012_60)] font-semibold shadow-[0_16px_36px_-24px_oklch(0.74_0.16_65)]"
                                     : "hover:bg-[oklch(0.92_0.012_80)]/10 text-[oklch(0.92_0.012_80)]/70"
                                     }`}
                             >
@@ -69,6 +72,17 @@ export default function DashboardShell({
 
                 {/* FOOTER */}
                 <div className="p-4 border-t border-[oklch(0.92_0.012_80)]/10">
+                    <div className="mb-3 rounded-2xl border border-[oklch(0.92_0.012_80)]/10 bg-[oklch(0.92_0.012_80)]/5 p-4">
+                        <div className="text-[10px] uppercase tracking-[0.22em] text-[oklch(0.92_0.012_80)]/40">
+                            Today
+                        </div>
+                        <div className="mt-2 text-sm font-semibold text-[oklch(0.92_0.012_80)]">
+                            Operations ready
+                        </div>
+                        <div className="mt-1 text-xs text-[oklch(0.92_0.012_80)]/50">
+                            Sales, service, credits, and stock
+                        </div>
+                    </div>
                     <Link
                         to="/"
                         className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-[oklch(0.92_0.012_80)]/70 hover:bg-[oklch(0.92_0.012_80)]/10 transition"
