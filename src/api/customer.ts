@@ -242,9 +242,13 @@ const saveLocalRegistration = (
     auth?: AuthResponse
 ) => {
     const email = payload.email.trim();
+    const savedCustomer = {
+        ...customer,
+        customerId: auth?.customerId ?? customer.customerId,
+    };
     const customers = readCustomers();
     writeCustomers([
-        customer,
+        savedCustomer,
         ...customers.filter((item) => item.email.trim().toLowerCase() !== email.toLowerCase()),
     ]);
 
@@ -424,14 +428,9 @@ export const registerCustomer = async (payload: RegisterPayload) => {
         vehicleYear: payload.vehicleYear ? Number(payload.vehicleYear) : null,
     };
 
-    try {
-        const response = await api.post<AuthResponse>("/auth/register", registration);
-        saveLocalRegistration(payload, localCustomer, response.data);
-        return response.data;
-    } catch {
-        saveLocalRegistration(payload, localCustomer);
-        return localCustomer;
-    }
+    const response = await api.post<AuthResponse>("/auth/register", registration);
+    saveLocalRegistration(payload, localCustomer, response.data);
+    return response.data;
 };
 
 export const getCustomers = async () => {

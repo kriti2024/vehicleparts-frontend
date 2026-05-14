@@ -1,9 +1,24 @@
 import api from "./axios";
 
+export type ReportSummary = {
+    dailySales: number;
+    monthlySales: number;
+    yearlySales: number;
+    dailyInvoices: number;
+    monthlyInvoices: number;
+    yearlyInvoices: number;
+};
+
+export type MonthlyRevenue = {
+    month: string;
+    sales: number;
+    invoices: number;
+};
+
 export const getReportSummary = async () => {
 
     const response =
-        await api.get(
+        await api.get<ReportSummary>(
             "/admin/reports/summary"
         );
 
@@ -25,6 +40,16 @@ export const getMonthlyReport = async () => {
     const response =
         await api.get(
             "/admin/reports/monthly"
+        );
+
+    return response.data;
+};
+
+export const getMonthlyRevenue = async () => {
+
+    const response =
+        await api.get<MonthlyRevenue[]>(
+            "/admin/reports/monthly-revenue"
         );
 
     return response.data;

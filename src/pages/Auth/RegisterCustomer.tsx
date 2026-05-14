@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import axios from "axios";
 import { Logo } from "../../components/Logo";
 import heroCar from "../../assets/hero-car.jpg";
 import { registerCustomer } from "../../api/customer";
@@ -49,8 +50,14 @@ export default function RegisterCustomer() {
                     registeredEmail: formData.email.trim(),
                 },
             });
-        } catch {
-            setError("Unable to register customer. Please try again.");
+        } catch (error) {
+            setError(
+                axios.isAxiosError(error)
+                    ? error.response?.data?.message
+                    ?? error.response?.data?.title
+                    ?? "Unable to register customer. Please check your details and try again."
+                    : "Unable to register customer. Please try again."
+            );
         } finally {
             setSubmitting(false);
         }

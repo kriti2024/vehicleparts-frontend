@@ -85,7 +85,7 @@ export default function AuthProvider({
 
             loggedUser = {
                 ...res.data,
-                customerId: readCustomerId(res.data.token),
+                customerId: res.data.customerId ?? readCustomerId(res.data.token),
             };
         } catch (error) {
             try {
