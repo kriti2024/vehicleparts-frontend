@@ -1,24 +1,34 @@
 import { Outlet } from "react-router-dom";
+import {
+  BarChart3,
+  CalendarDays,
+  CreditCard,
+  FileText,
+  LayoutDashboard,
+  PackageSearch,
+  Search,
+  ShoppingCart,
+  Users,
+} from "lucide-react";
 
-import StaffSidebar from "./StaffSidebar";
-import StaffHeader from "./StaffHeader";
+import DashboardShell from "../Admin/DashboardShell";
+
+const staffNav = [
+  { to: "/staff", label: "Overview", icon: LayoutDashboard },
+  { to: "/staff/customers", label: "Customers", icon: Users },
+  { to: "/staff/sales", label: "New Sale", icon: ShoppingCart },
+  { to: "/staff/invoices", label: "Invoices", icon: FileText },
+  { to: "/staff/search", label: "Search", icon: Search },
+  { to: "/staff/service-queue", label: "Service Queue", icon: CalendarDays },
+  { to: "/staff/credits", label: "Credits", icon: CreditCard },
+  { to: "/staff/stock-alerts", label: "Stock Alerts", icon: PackageSearch },
+  { to: "/staff/reports", label: "Reports", icon: BarChart3 },
+];
 
 export function StaffLayout() {
   return (
-    <div className="min-h-screen flex bg-gray-100">
-      {/* Sidebar */}
-      <StaffSidebar />
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Header */}
-        <StaffHeader role="Staff" />
-
-        {/* Page Content */}
-        <main className="flex-1 p-6 lg:p-8 overflow-x-hidden">
-          <Outlet />
-        </main>
-      </div>
-    </div>
+    <DashboardShell role="Staff" nav={staffNav}>
+      <Outlet />
+    </DashboardShell>
   );
 }

@@ -17,6 +17,9 @@ import StaffSales from "./pages/Staff/StaffSales";
 import StaffInvoices from "./pages/Staff/StaffInvoices";
 import StaffSearch from "./pages/Staff/StaffSearch";
 import StaffReports from "./pages/Staff/StaffReports";
+import StaffServiceQueue from "./pages/Staff/StaffServiceQueue";
+import StaffCredits from "./pages/Staff/StaffCredits";
+import StaffStockAlerts from "./pages/Staff/StaffStockAlerts";
 
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import StaffPage from "./pages/Admin/Staff";
@@ -55,6 +58,9 @@ function App() {
                     <Route path="sales" element={<StaffSales />} />
                     <Route path="invoices" element={<StaffInvoices />} />
                     <Route path="search" element={<StaffSearch />} />
+                    <Route path="service-queue" element={<StaffServiceQueue />} />
+                    <Route path="credits" element={<StaffCredits />} />
+                    <Route path="stock-alerts" element={<StaffStockAlerts />} />
                     <Route path="reports" element={<StaffReports />} />
                 </Route>
 
