@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import {
     getReportSummary,
     getLowStockParts,
-    getMonthlyReport
+    getMonthlyRevenue,
+    type ReportSummary,
 } from "../../api/admin";
 import DashboardShell from "../../components/Admin/DashboardShell";
 import StatCard from "../../components/Admin/StatCard";
@@ -64,49 +65,16 @@ const adminNav = [
     },
 ];
 
-const fallbackSummary = {
-    monthlySales: 186500,
-    yearlySales: 1487600,
-    monthlyInvoices: 42,
-    dailyInvoices: 6,
+const emptySummary = {
+    dailySales: 0,
+    monthlySales: 0,
+    yearlySales: 0,
+    dailyInvoices: 0,
+    monthlyInvoices: 0,
+    yearlyInvoices: 0,
 };
 
-const fallbackRevenueData = [
-    { month: "JAN", sales: 82000 },
-    { month: "FEB", sales: 96000 },
-    { month: "MAR", sales: 112000 },
-    { month: "APR", sales: 104500 },
-    { month: "MAY", sales: 126000 },
-    { month: "JUN", sales: 141000 },
-    { month: "JUL", sales: 132500 },
-    { month: "AUG", sales: 158000 },
-    { month: "SEP", sales: 149500 },
-    { month: "OCT", sales: 171000 },
-    { month: "NOV", sales: 164000 },
-    { month: "DEC", sales: 186500 },
-];
-
-const fallbackLowStock = [
-    {
-        partId: 5,
-        partName: "Clutch Plate",
-        stockQuantity: 9,
-    },
-    {
-        partId: 14,
-        partName: "Alternator",
-        stockQuantity: 7,
-    },
-];
-
 export default function AdminDashboard() {
-
-    type Summary = {
-        monthlySales: number;
-        yearlySales: number;
-        monthlyInvoices: number;
-        dailyInvoices: number;
-    };
 
     type LowStockPart = {
         partId: number;
@@ -120,7 +88,7 @@ export default function AdminDashboard() {
     };
 
     const [summary, setSummary] =
-        useState<Summary | null>(null);
+        useState<ReportSummary>(emptySummary);
 
     const [lowStock, setLowStock] =
         useState<LowStockPart[]>([]);
@@ -129,56 +97,34 @@ export default function AdminDashboard() {
         useState<RevenueData[]>([]);
 
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     useEffect(() => {
 
         const fetchDashboard = async () => {
             try {
+                setError("");
 
-                // Summary data
-                const summaryData =
-                    await getReportSummary();
+                const [
+                    summaryData,
+                    lowStockData,
+                    monthlyRevenueData,
+                ] = await Promise.all([
+                    getReportSummary(),
+                    getLowStockParts(),
+                    getMonthlyRevenue(),
+                ]);
 
-                setSummary(summaryData ?? fallbackSummary);
-
-                // Low stock data
-                const lowStockData =
-                    await getLowStockParts();
-
-                setLowStock(
-                    lowStockData.length > 0
-                        ? lowStockData
-                        : fallbackLowStock
-                );
-
-                // Revenue chart data
-                const monthlyReport =
-                    await getMonthlyReport();
-
-                const monthlySales =
-                    Number(
-                        monthlyReport.sales
-                    );
-
-                const formattedRevenue =
-                    fallbackRevenueData.map(
-                        (item, index) => ({
-                            ...item,
-                            sales:
-                                index === fallbackRevenueData.length - 1
-                                    && monthlySales > 0
-                                    ? monthlySales
-                                    : item.sales,
-                        })
-                    );
-
-                setRevenueData(formattedRevenue);
+                setSummary(summaryData ?? emptySummary);
+                setLowStock(lowStockData);
+                setRevenueData(monthlyRevenueData);
 
             } catch (error) {
                 console.error(error);
-                setSummary(fallbackSummary);
-                setLowStock(fallbackLowStock);
-                setRevenueData(fallbackRevenueData);
+                setSummary(emptySummary);
+                setLowStock([]);
+                setRevenueData([]);
+                setError("Dashboard data could not be loaded from the backend.");
             }
 
             finally {
@@ -213,6 +159,12 @@ export default function AdminDashboard() {
                     <p className="mt-3 text-[oklch(0.5_0.012_70)]">
                         Monitor inventory, invoices, vendors and financial performance.
                     </p>
+
+                    {error && (
+                        <div className="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                            {error}
+                        </div>
+                    )}
                 </div>
 
                 {/* STATS */}
@@ -220,25 +172,25 @@ export default function AdminDashboard() {
 
                     <StatCard
                         label="Monthly Sales"
-                        value={`Rs. ${summary?.monthlySales ?? fallbackSummary.monthlySales}`}
+                        value={`Rs. ${summary.monthlySales}`}
                         hint="Current month revenue"
                     />
 
                     <StatCard
                         label="Yearly Sales"
-                        value={`Rs. ${summary?.yearlySales ?? fallbackSummary.yearlySales}`}
+                        value={`Rs. ${summary.yearlySales}`}
                         hint="Annual revenue"
                     />
 
                     <StatCard
                         label="Monthly Invoices"
-                        value={`${summary?.monthlyInvoices ?? fallbackSummary.monthlyInvoices}`}
+                        value={`${summary.monthlyInvoices}`}
                         hint="Invoices generated"
                     />
 
                     <StatCard
                         label="Daily Invoices"
-                        value={`${summary?.dailyInvoices ?? fallbackSummary.dailyInvoices}`}
+                        value={`${summary.dailyInvoices}`}
                         hint="Today's invoices"
                     />
 
@@ -252,11 +204,7 @@ export default function AdminDashboard() {
 
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart
-                                        data={
-                                            revenueData.length > 0
-                                                ? revenueData
-                                                : fallbackRevenueData
-                                        }
+                                        data={revenueData}
                                         margin={{
                                             top: 12,
                                             right: 12,
