@@ -15,6 +15,39 @@ export type MonthlyRevenue = {
     invoices: number;
 };
 
+export type FinancialReportPeriod = "daily" | "monthly" | "yearly";
+
+export type FinancialSaleInvoice = {
+    saleId: number;
+    invoiceNumber: string;
+    saleDate: string;
+    customerName: string;
+    finalAmount: number;
+    discountAmount: number;
+    paymentStatus: string;
+};
+
+export type FinancialPurchaseInvoice = {
+    purchaseInvoiceId: number;
+    invoiceNumber: string;
+    purchaseDate: string;
+    vendorName: string;
+    totalAmount: number;
+};
+
+export type SimpleFinancialReport = {
+    period: FinancialReportPeriod;
+    periodLabel: string;
+    totalSalesRevenue: number;
+    totalPurchaseCost: number;
+    estimatedProfit: number;
+    totalDiscountGiven: number;
+    salesInvoiceCount: number;
+    purchaseInvoiceCount: number;
+    recentSalesInvoices: FinancialSaleInvoice[];
+    recentPurchaseInvoices: FinancialPurchaseInvoice[];
+};
+
 export type AdminNotification = {
     notificationId: number;
     message: string;
@@ -30,6 +63,18 @@ export const getReportSummary = async () => {
     const response =
         await api.get<ReportSummary>(
             "/admin/reports/summary"
+        );
+
+    return response.data;
+};
+
+export const getFinancialReport = async (
+    period: FinancialReportPeriod
+) => {
+    const response =
+        await api.get<SimpleFinancialReport>(
+            "/admin/reports/financial",
+            { params: { period } }
         );
 
     return response.data;
@@ -315,4 +360,14 @@ const response =
 
 return response.data;
 
+};
+
+export const getAllPartRequests = async () => {
+    const response = await api.get("/customer-requests/all");
+    return response.data;
+};
+
+export const updatePartRequestStatus = async (id: number, status: string) => {
+    const response = await api.put(`/customer-requests/${id}/status`, { status });
+    return response.data;
 };

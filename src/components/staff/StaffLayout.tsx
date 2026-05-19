@@ -1,11 +1,8 @@
 import { Outlet } from "react-router-dom";
 import {
   BarChart3,
-  CalendarDays,
-  CreditCard,
   FileText,
   LayoutDashboard,
-  PackageSearch,
   Search,
   ShoppingCart,
   Users,
@@ -19,9 +16,6 @@ const staffNav = [
   { to: "/staff/sales", label: "New Sale", icon: ShoppingCart },
   { to: "/staff/invoices", label: "Invoices", icon: FileText },
   { to: "/staff/search", label: "Search", icon: Search },
-  { to: "/staff/service-queue", label: "Service Queue", icon: CalendarDays },
-  { to: "/staff/credits", label: "Credits", icon: CreditCard },
-  { to: "/staff/stock-alerts", label: "Stock Alerts", icon: PackageSearch },
   { to: "/staff/reports", label: "Reports", icon: BarChart3 },
 ];
 

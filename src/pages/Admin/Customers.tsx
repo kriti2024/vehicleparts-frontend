@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 
 import { getCustomers, type CustomerProfile } from "../../api/customer";
-import { sendCreditReminders } from "../../api/admin";
 import DashboardShell from "../../components/Admin/DashboardShell";
 import DataCard from "../../components/Admin/DataCard";
 import StatCard from "../../components/Admin/StatCard";
@@ -32,7 +31,6 @@ const adminNav = [
 export default function CustomersPage() {
     const [customers, setCustomers] = useState<CustomerProfile[]>([]);
     const [loading, setLoading] = useState(true);
-    const [notice, setNotice] = useState("");
 
     useEffect(() => {
         const loadCustomers = async () => {
@@ -51,15 +49,13 @@ export default function CustomersPage() {
             customers.filter((customer) => {
                 if (!customer.creditDueDate || customer.creditBalance <= 0) return false;
                 const dueDate = new Date(customer.creditDueDate);
-                const monthAgo = new Date();
-                monthAgo.setMonth(monthAgo.getMonth() - 1);
-                return dueDate < monthAgo;
+                return dueDate < new Date();
             }),
         [customers]
     );
 
     const vehicleCount = customers.reduce(
-        (total, customer) => total + customer.vehicles.length,
+        (total, customer) => total + (customer.vehicles ?? []).length,
         0
     );
 
@@ -68,14 +64,6 @@ export default function CustomersPage() {
         0
     );
 
-    const handleCreditReminders = async () => {
-        try {
-            const response = await sendCreditReminders();
-            setNotice(response?.message ?? "Credit reminder emails sent.");
-        } catch {
-            setNotice("Credit reminder emails queued for overdue customers.");
-        }
-    };
 
     if (loading) {
         return (
@@ -100,22 +88,7 @@ export default function CustomersPage() {
                             Review customer profiles, registered vehicles, credits, and reminders.
                         </p>
                     </div>
-
-                    <button
-                        onClick={handleCreditReminders}
-                        className="inline-flex items-center gap-2 rounded-full bg-[oklch(0.205_0.012_60)] px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white hover:opacity-90"
-                    >
-                        <Mail className="h-4 w-4" />
-                        Send Reminders
-                    </button>
                 </div>
-
-                {notice && (
-                    <div className="mb-6 rounded-2xl border border-[oklch(0.84_0.1_130)] bg-[oklch(0.94_0.05_130)] px-5 py-3 text-sm font-medium">
-                        {notice}
-                    </div>
-                )}
-
                 <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
                     <StatCard label="Customers" value={`${customers.length}`} />
                     <StatCard label="Vehicles" value={`${vehicleCount}`} />
@@ -165,7 +138,7 @@ export default function CustomersPage() {
                                                     </td>
                                                     <td className="py-4 pr-4">{customer.phone}</td>
                                                     <td className="py-4 pr-4">
-                                                        {customer.vehicles.map((vehicle) => (
+                                                        {(customer.vehicles ?? []).map((vehicle) => (
                                                             <div key={vehicle.id} className="mb-1">
                                                                 {vehicle.vehicleNumber} - {vehicle.vehicleBrand}{" "}
                                                                 {vehicle.vehicleModel}

@@ -62,6 +62,11 @@ const adminNav = [
         icon: FileText,
     },
     {
+        to: "/admin/requests",
+        label: "Part Requests",
+        icon: FileText,
+    },
+    {
         to: "/admin/reports",
         label: "Reports",
         icon: BarChart3,
