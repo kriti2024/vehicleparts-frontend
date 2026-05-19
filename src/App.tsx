@@ -17,9 +17,6 @@ import StaffSales from "./pages/Staff/StaffSales";
 import StaffInvoices from "./pages/Staff/StaffInvoices";
 import StaffSearch from "./pages/Staff/StaffSearch";
 import StaffReports from "./pages/Staff/StaffReports";
-import StaffServiceQueue from "./pages/Staff/StaffServiceQueue";
-import StaffCredits from "./pages/Staff/StaffCredits";
-import StaffStockAlerts from "./pages/Staff/StaffStockAlerts";
 
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import StaffPage from "./pages/Admin/Staff";
@@ -28,6 +25,7 @@ import VendorsPage from "./pages/Admin/Vendors";
 import InvoicesPage from "./pages/Admin/Invoices";
 import ReportsPage from "./pages/Admin/Reports";
 import CustomersPage from "./pages/Admin/Customers";
+import PartRequests from "./pages/Admin/PartRequests";
 import NotificationsPage from "./pages/Admin/Notifications";
 import AddPart from "./pages/Admin/AddPart";
 import EditPart from "./pages/Admin/EditPart";
@@ -54,15 +52,19 @@ function App() {
                 <Route path="/register" element={<RegisterCustomer />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
 
-                <Route path="/staff" element={<StaffLayout />}>
+                <Route
+                    path="/staff"
+                    element={
+                        <ProtectedRoute allowedRoles={["Staff"]}>
+                            <StaffLayout />
+                        </ProtectedRoute>
+                    }
+                >
                     <Route index element={<StaffDashboard />} />
                     <Route path="customers" element={<StaffCustomers />} />
                     <Route path="sales" element={<StaffSales />} />
                     <Route path="invoices" element={<StaffInvoices />} />
                     <Route path="search" element={<StaffSearch />} />
-                    <Route path="service-queue" element={<StaffServiceQueue />} />
-                    <Route path="credits" element={<StaffCredits />} />
-                    <Route path="stock-alerts" element={<StaffStockAlerts />} />
                     <Route path="reports" element={<StaffReports />} />
                 </Route>
 
@@ -82,6 +84,7 @@ function App() {
                 <Route path="/admin/purchase-invoice" element={<ProtectedRoute allowedRoles={["Admin"]}><CreatePurchaseInvoice /></ProtectedRoute>} />
                 <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={["Admin"]}><ReportsPage /></ProtectedRoute>} />
                 <Route path="/admin/customers" element={<ProtectedRoute allowedRoles={["Admin"]}><CustomersPage /></ProtectedRoute>} />
+                <Route path="/admin/requests" element={<ProtectedRoute allowedRoles={["Admin"]}><PartRequests /></ProtectedRoute>} />
                 <Route path="/admin/notifications" element={<ProtectedRoute allowedRoles={["Admin"]}><NotificationsPage /></ProtectedRoute>} />
 
                 {[
@@ -98,8 +101,11 @@ function App() {
                     <Route
                         key={path}
                         path={path}
-                        element={<CustomerDashboard />}
-                    />
+                        element={
+                            <ProtectedRoute allowedRoles={["Customer"]}>
+                                <CustomerDashboard />
+                            </ProtectedRoute>
+                        }                    />
                 ))}
             </Routes>
         </BrowserRouter>

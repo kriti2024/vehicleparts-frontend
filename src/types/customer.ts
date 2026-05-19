@@ -25,7 +25,6 @@ export interface CreateCustomerRequest {
   fullName: string;
   phone: string;
   email: string;
-  password: string;
 }
 
 export interface CreateVehicleRequest {

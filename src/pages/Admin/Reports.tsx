@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DashboardShell from "../../components/Admin/DashboardShell";
 import DataCard from "../../components/Admin/DataCard";
 import StatCard from "../../components/Admin/StatCard";
 import {
-    getReportSummary,
-    getDailyReport,
-    getMonthlyReport,
-    getYearlyReport,
-    sendCreditReminders,
-    sendLowStockAlerts,
+    getFinancialReport,
+    type FinancialPurchaseInvoice,
+    type FinancialReportPeriod,
+    type FinancialSaleInvoice,
+    type SimpleFinancialReport,
 } from "../../api/admin";
 import {
     LayoutDashboard,
@@ -30,119 +29,191 @@ const adminNav = [
     { to: "/admin/reports", label: "Reports", icon: BarChart3 },
 ];
 
-type ReportData = {
-    sales: number;
-    invoices: number;
-};
+const periods: FinancialReportPeriod[] = ["daily", "monthly", "yearly"];
 
-type Summary = {
-    dailySales: number;
-    monthlySales: number;
-    yearlySales: number;
-    dailyInvoices: number;
-    monthlyInvoices: number;
-    yearlyInvoices: number;
-};
+const formatCurrency = (value: number) =>
+    `Rs. ${Number(value || 0).toLocaleString("en-NP", {
+        maximumFractionDigits: 2,
+    })}`;
+
+const formatDate = (value: string) =>
+    new Date(value).toLocaleDateString("en-NP", {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+    });
+
+function EmptyTable({ text }: { text: string }) {
+    return (
+        <div className="rounded-2xl bg-gray-50 p-6 text-sm text-gray-500">
+            {text}
+        </div>
+    );
+}
+
+function SalesInvoiceTable({
+    invoices,
+}: {
+    invoices: FinancialSaleInvoice[];
+}) {
+    if (invoices.length === 0) {
+        return <EmptyTable text="No sales invoices found for this period." />;
+    }
+
+    return (
+        <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-sm">
+                <thead>
+                    <tr className="border-b border-gray-200 text-xs uppercase tracking-[0.18em] text-gray-500">
+                        <th className="py-3 pr-4 font-semibold">Invoice</th>
+                        <th className="py-3 pr-4 font-semibold">Date</th>
+                        <th className="py-3 pr-4 font-semibold">Customer</th>
+                        <th className="py-3 pr-4 font-semibold">Status</th>
+                        <th className="py-3 text-right font-semibold">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {invoices.map((invoice) => (
+                        <tr
+                            key={invoice.saleId}
+                            className="border-b border-gray-100 last:border-0"
+                        >
+                            <td className="py-4 pr-4 font-semibold">
+                                {invoice.invoiceNumber}
+                            </td>
+                            <td className="py-4 pr-4 text-gray-600">
+                                {formatDate(invoice.saleDate)}
+                            </td>
+                            <td className="py-4 pr-4 text-gray-700">
+                                {invoice.customerName}
+                            </td>
+                            <td className="py-4 pr-4 text-gray-600">
+                                {invoice.paymentStatus}
+                            </td>
+                            <td className="py-4 text-right font-semibold">
+                                {formatCurrency(invoice.finalAmount)}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
+function PurchaseInvoiceTable({
+    invoices,
+}: {
+    invoices: FinancialPurchaseInvoice[];
+}) {
+    if (invoices.length === 0) {
+        return <EmptyTable text="No purchase invoices found for this period." />;
+    }
+
+    return (
+        <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-sm">
+                <thead>
+                    <tr className="border-b border-gray-200 text-xs uppercase tracking-[0.18em] text-gray-500">
+                        <th className="py-3 pr-4 font-semibold">Invoice</th>
+                        <th className="py-3 pr-4 font-semibold">Date</th>
+                        <th className="py-3 pr-4 font-semibold">Vendor</th>
+                        <th className="py-3 text-right font-semibold">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {invoices.map((invoice) => (
+                        <tr
+                            key={invoice.purchaseInvoiceId}
+                            className="border-b border-gray-100 last:border-0"
+                        >
+                            <td className="py-4 pr-4 font-semibold">
+                                {invoice.invoiceNumber}
+                            </td>
+                            <td className="py-4 pr-4 text-gray-600">
+                                {formatDate(invoice.purchaseDate)}
+                            </td>
+                            <td className="py-4 pr-4 text-gray-700">
+                                {invoice.vendorName}
+                            </td>
+                            <td className="py-4 text-right font-semibold">
+                                {formatCurrency(invoice.totalAmount)}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+}
 
 export default function ReportsPage() {
-    const [summary, setSummary] = useState<Summary | null>(null);
-    const [report, setReport] = useState<ReportData | null>(null);
+    const [report, setReport] = useState<SimpleFinancialReport | null>(null);
     const [loading, setLoading] = useState(true);
-    const [period, setPeriod] = useState<"daily" | "monthly" | "yearly">("monthly");
+    const [error, setError] = useState("");
+    const [period, setPeriod] = useState<FinancialReportPeriod>("monthly");
 
     useEffect(() => {
-        const fetchReports = async () => {
+        const fetchReport = async () => {
             try {
-                const summaryData = await getReportSummary();
-                setSummary(summaryData);
-
-                const monthlyData = await getMonthlyReport();
-                setReport(monthlyData);
-            } catch (error) {
-                console.error(error);
+                setLoading(true);
+                setError("");
+                setReport(await getFinancialReport(period));
+            } catch {
+                setReport(null);
+                setError("Financial report could not be loaded.");
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchReports();
-    }, []);
+        fetchReport();
+    }, [period]);
 
-    const handlePeriodChange = async (value: "daily" | "monthly" | "yearly") => {
-        setPeriod(value);
-        try {
-            if (value === "daily") {
-                setReport(await getDailyReport());
-            } else if (value === "monthly") {
-                setReport(await getMonthlyReport());
-            } else {
-                setReport(await getYearlyReport());
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    const totalInvoices = useMemo(
+        () =>
+            (report?.salesInvoiceCount ?? 0) +
+            (report?.purchaseInvoiceCount ?? 0),
+        [report]
+    );
 
-    const handleSendCreditReminders = async () => {
-        try {
-            const res = await sendCreditReminders();
-            alert(res.message);
-        } catch (error) {
-            console.error(error);
-            alert("Failed to send reminders.");
-        }
-    };
-
-    const handleSendLowStockAlerts = async () => {
-        try {
-            const res = await sendLowStockAlerts();
-            alert(res.message);
-        } catch (error) {
-            console.error(error);
-            alert("Failed to send alerts.");
-        }
-    };
-
-    if (loading) {
-        return (
-            <div className="min-h-screen grid place-items-center">
-                Loading reports...
-            </div>
-        );
-    }
+    const profitHint =
+        (report?.estimatedProfit ?? 0) >= 0
+            ? "Revenue minus purchase cost"
+            : "Purchase cost is higher than sales";
 
     return (
         <DashboardShell role="Admin" nav={adminNav}>
             <div>
-
-                {/* HEADER */}
-                <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
+                <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
                     <div>
                         <div className="text-[11px] uppercase tracking-[0.3em] text-gray-500">
                             Analytics & Reports
                         </div>
                         <h1 className="mt-3 text-5xl font-bold">Financial Reports</h1>
                         <p className="mt-3 text-gray-500">
-                            Auto-generated business insights and reports.
+                            {report?.periodLabel ?? "Daily, monthly and yearly report"}
                         </p>
                     </div>
 
                     <button
+                        type="button"
                         onClick={() => window.print()}
-                        className="rounded-full bg-black text-white px-6 py-3 text-xs font-semibold tracking-[0.2em] uppercase inline-flex items-center gap-2"
+                        className="inline-flex items-center gap-2 rounded-full bg-black px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white print:hidden"
                     >
                         <Download className="h-4 w-4" />
                         Export PDF
                     </button>
                 </div>
 
-                {/* PERIOD FILTER */}
-                <div className="inline-flex p-1 bg-gray-100 rounded-2xl mb-8">
-                    {(["daily", "monthly", "yearly"] as const).map((p) => (
+                <div className="mb-8 inline-flex rounded-2xl bg-gray-100 p-1 print:hidden">
+                    {periods.map((p) => (
                         <button
+                            type="button"
                             key={p}
-                            onClick={() => handlePeriodChange(p)}
-                            className={`px-5 py-2 rounded-xl text-xs uppercase tracking-[0.2em] transition ${period === p
+                            disabled={loading}
+                            onClick={() => setPeriod(p)}
+                            className={`rounded-xl px-5 py-2 text-xs uppercase tracking-[0.2em] transition ${period === p
                                     ? "bg-white shadow font-semibold"
                                     : "text-gray-500"
                                 }`}
@@ -152,57 +223,97 @@ export default function ReportsPage() {
                     ))}
                 </div>
 
-                {/* STAT CARDS */}
+                {error && (
+                    <div className="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        {error}
+                    </div>
+                )}
+
                 <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-                    <StatCard label="Revenue" value={`Rs. ${report?.sales ?? 0}`} />
-                    <StatCard label="Invoices" value={`${report?.invoices ?? 0}`} />
-                    <StatCard label="Monthly Sales" value={`Rs. ${summary?.monthlySales ?? 0}`} />
-                    <StatCard label="Yearly Sales" value={`Rs. ${summary?.yearlySales ?? 0}`} />
+                    <StatCard
+                        label="Sales"
+                        value={loading ? "..." : formatCurrency(report?.totalSalesRevenue ?? 0)}
+                        hint="Customer sales revenue"
+                    />
+                    <StatCard
+                        label="Purchases"
+                        value={loading ? "..." : formatCurrency(report?.totalPurchaseCost ?? 0)}
+                        hint="Vendor purchase cost"
+                    />
+                    <StatCard
+                        label="Profit"
+                        value={loading ? "..." : formatCurrency(report?.estimatedProfit ?? 0)}
+                        hint={profitHint}
+                    />
+                    <StatCard
+                        label="Invoices"
+                        value={loading ? "..." : `${totalInvoices}`}
+                        hint={`${report?.salesInvoiceCount ?? 0} sales, ${report?.purchaseInvoiceCount ?? 0} purchase`}
+                    />
                 </div>
 
-                {/* SYSTEM NOTIFICATIONS */}
-                <div className="mb-8">
-                    <DataCard title="System Notifications">
-                        <div className="flex flex-wrap gap-4">
-                            <button
-                                onClick={handleSendLowStockAlerts}
-                                className="rounded-2xl bg-red-500 text-white px-6 py-3 text-sm font-medium hover:opacity-90"
-                            >
-                                Send Low Stock Alerts
-                            </button>
-                            <button
-                                onClick={handleSendCreditReminders}
-                                className="rounded-2xl bg-yellow-500 text-white px-6 py-3 text-sm font-medium hover:opacity-90"
-                            >
-                                Send Credit Reminders
-                            </button>
-                        </div>
+                <div className="space-y-8">
+                    <DataCard title="Report Summary">
+                        {loading ? (
+                            <p className="text-sm text-gray-500">Loading report...</p>
+                        ) : (
+                            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                                <div className="rounded-2xl bg-gray-50 p-5">
+                                    <div className="text-xs uppercase tracking-[0.18em] text-gray-500">
+                                        Period
+                                    </div>
+                                    <div className="mt-2 font-semibold">
+                                        {report?.periodLabel ?? "-"}
+                                    </div>
+                                </div>
+                                <div className="rounded-2xl bg-gray-50 p-5">
+                                    <div className="text-xs uppercase tracking-[0.18em] text-gray-500">
+                                        Discount Given
+                                    </div>
+                                    <div className="mt-2 font-semibold">
+                                        {formatCurrency(report?.totalDiscountGiven ?? 0)}
+                                    </div>
+                                </div>
+                                <div className="rounded-2xl bg-gray-50 p-5">
+                                    <div className="text-xs uppercase tracking-[0.18em] text-gray-500">
+                                        Sales Invoices
+                                    </div>
+                                    <div className="mt-2 font-semibold">
+                                        {report?.salesInvoiceCount ?? 0}
+                                    </div>
+                                </div>
+                                <div className="rounded-2xl bg-gray-50 p-5">
+                                    <div className="text-xs uppercase tracking-[0.18em] text-gray-500">
+                                        Purchase Invoices
+                                    </div>
+                                    <div className="mt-2 font-semibold">
+                                        {report?.purchaseInvoiceCount ?? 0}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </DataCard>
+
+                    <DataCard title="Recent Sales Invoices">
+                        {loading ? (
+                            <p className="text-sm text-gray-500">Loading sales invoices...</p>
+                        ) : (
+                            <SalesInvoiceTable
+                                invoices={report?.recentSalesInvoices ?? []}
+                            />
+                        )}
+                    </DataCard>
+
+                    <DataCard title="Recent Purchase Invoices">
+                        {loading ? (
+                            <p className="text-sm text-gray-500">Loading purchase invoices...</p>
+                        ) : (
+                            <PurchaseInvoiceTable
+                                invoices={report?.recentPurchaseInvoices ?? []}
+                            />
+                        )}
                     </DataCard>
                 </div>
-
-                {/* FINANCIAL SUMMARY */}
-                <DataCard title="Financial Summary">
-                    <div className="grid md:grid-cols-3 gap-6">
-                        <div className="rounded-2xl bg-gray-50 p-6">
-                            <div className="text-sm text-gray-500">Daily Revenue</div>
-                            <div className="mt-2 text-3xl font-bold">
-                                Rs. {summary?.dailySales ?? 0}
-                            </div>
-                        </div>
-                        <div className="rounded-2xl bg-gray-50 p-6">
-                            <div className="text-sm text-gray-500">Monthly Revenue</div>
-                            <div className="mt-2 text-3xl font-bold">
-                                Rs. {summary?.monthlySales ?? 0}
-                            </div>
-                        </div>
-                        <div className="rounded-2xl bg-gray-50 p-6">
-                            <div className="text-sm text-gray-500">Yearly Revenue</div>
-                            <div className="mt-2 text-3xl font-bold">
-                                Rs. {summary?.yearlySales ?? 0}
-                            </div>
-                        </div>
-                    </div>
-                </DataCard>
 
             </div>
         </DashboardShell>

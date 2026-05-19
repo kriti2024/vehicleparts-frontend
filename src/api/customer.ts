@@ -1,11 +1,8 @@
 import api from "./axios";
 
-const CUSTOMER_STORE_KEY = "axleworks_customers";
-const ACTIVITY_STORE_KEY = "axleworks_customer_activity";
-const AUTH_STORE_KEY = "axleworks_auth_users";
-
 export type Vehicle = {
     id: string;
+    vehicleId?: number;
     vehicleNumber: string;
     vehicleBrand: string;
     vehicleModel: string;
@@ -26,6 +23,7 @@ export type CustomerProfile = {
 
 export type Appointment = {
     id: string;
+    serviceBookingId?: number;
     customerName: string;
     vehicleNumber: string;
     serviceType: string;
@@ -36,6 +34,7 @@ export type Appointment = {
 
 export type PartRequest = {
     id: string;
+    partRequestId?: number;
     customerName: string;
     partName: string;
     vehicleModel: string;
@@ -43,19 +42,9 @@ export type PartRequest = {
     status: "Requested" | "Sourcing" | "Arrived";
 };
 
-export type AvailablePart = {
-    partId: number;
-    partName: string;
-    price: number;
-    stockQuantity: number;
-    vendorName?: string;
-    imageUrl?: string;
-    vehicleBrand?: string;
-    vehicleModel?: string;
-};
-
 export type ServiceReview = {
     id: string;
+    serviceReviewId?: number;
     serviceName: string;
     rating: number;
     comment: string;
@@ -76,6 +65,17 @@ export type CustomerActivity = {
     }[];
 };
 
+export type AvailablePart = {
+    partId: number;
+    partName: string;
+    price: number;
+    stockQuantity: number;
+    vendorName?: string;
+    imageUrl?: string;
+    vehicleBrand?: string;
+    vehicleModel?: string;
+};
+
 export type EsewaPaymentInitiation = {
     saleId: number;
     formAction: string;
@@ -83,12 +83,7 @@ export type EsewaPaymentInitiation = {
     fields: Record<string, string>;
 };
 
-const ESEWA_TEST_FORM_URL = "https://rc-epay.esewa.com.np/api/epay/main/v2/form";
-const ESEWA_TEST_PRODUCT_CODE = "EPAYTEST";
-const ESEWA_TEST_SECRET = "8gBm/:&EnhH.1/q";
-const ESEWA_SIGNED_FIELD_NAMES = "total_amount,transaction_uuid,product_code";
-
-type RegisterPayload = {
+export const registerCustomer = async (data: {
     fullName: string;
     email: string;
     password: string;
@@ -97,693 +92,298 @@ type RegisterPayload = {
     vehicleBrand: string;
     vehicleModel: string;
     vehicleYear: string;
-};
-
-type LocalAuthUser = {
-    userId: string;
-    customerId?: number;
-    email: string;
-    fullName: string;
-    password: string;
-    roles: string[];
-};
-
-type AuthResponse = {
-    userId?: string;
-    customerId?: number;
-    email?: string;
-    fullName?: string;
-    roles?: string[];
-    token?: string;
-};
-
-type BackendVehicle = {
-    vehicleId?: number;
-    vehicleNumber?: string;
-    model?: string;
-    vehicleModel?: string;
-    brand?: string;
-    vehicleBrand?: string;
-    year?: number;
-    vehicleYear?: number;
-};
-
-type BackendCustomer = {
-    customerId?: number;
-    fullName?: string;
-    email?: string;
-    phone?: string;
-    vehicles?: BackendVehicle[];
-};
-
-type BackendSale = {
-    saleId?: number;
-    saleDate?: string;
-    finalAmount?: number;
-    subTotal?: number;
-    discountAmount?: number;
-    paymentStatus?: string;
-};
-
-type BackendBooking = {
-    serviceBookingId?: number;
-    customerId?: number;
-    vehicleNumber?: string;
-    appointmentDate?: string;
-    notes?: string;
-    status?: string;
-    createdAt?: string;
-};
-
-type BackendPartRequest = {
-    partRequestId?: number;
-    customerId?: number;
-    partName?: string;
-    vehicleModel?: string;
-    details?: string;
-    status?: string;
-    requestedAt?: string;
-};
-
-type BackendPart = {
-    partId?: number;
-    partName?: string;
-    price?: number;
-    stockQuantity?: number;
-    vendorName?: string;
-    imageUrl?: string;
-    vehicleBrand?: string;
-    vehicleModel?: string;
-};
-
-type BackendReview = {
-    serviceReviewId?: number;
-    customerId?: number;
-    rating?: number;
-    comment?: string;
-    reviewedAt?: string;
-};
-
-const createId = (prefix: string) =>
-    `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-
-const readCustomers = (): CustomerProfile[] => {
-    const saved = localStorage.getItem(CUSTOMER_STORE_KEY);
-    if (!saved) return [];
-
-    try {
-        return JSON.parse(saved) as CustomerProfile[];
-    } catch {
-        return [];
-    }
-};
-
-const writeCustomers = (customers: CustomerProfile[]) => {
-    localStorage.setItem(CUSTOMER_STORE_KEY, JSON.stringify(customers));
-};
-
-const readAuthUsers = (): LocalAuthUser[] => {
-    const saved = localStorage.getItem(AUTH_STORE_KEY);
-    if (!saved) return [];
-
-    try {
-        return JSON.parse(saved) as LocalAuthUser[];
-    } catch {
-        return [];
-    }
-};
-
-const writeAuthUsers = (users: LocalAuthUser[]) => {
-    localStorage.setItem(AUTH_STORE_KEY, JSON.stringify(users));
-};
-
-const createLocalCustomer = (payload: RegisterPayload): CustomerProfile => ({
-    id: createId("customer"),
-    fullName: payload.fullName,
-    email: payload.email.trim(),
-    phone: payload.phone,
-    creditBalance: 0,
-    creditDueDate: "",
-    totalSpend: 0,
-    vehicles: [
-        {
-            id: createId("vehicle"),
-            vehicleNumber: payload.vehicleNumber,
-            vehicleBrand: payload.vehicleBrand,
-            vehicleModel: payload.vehicleModel,
-            vehicleYear: payload.vehicleYear,
-        },
-    ],
-});
-
-const saveLocalRegistration = (
-    payload: RegisterPayload,
-    customer: CustomerProfile,
-    auth?: AuthResponse
-) => {
-    const email = payload.email.trim();
-    const savedCustomer = {
-        ...customer,
-        customerId: auth?.customerId ?? customer.customerId,
-    };
-    const customers = readCustomers();
-    writeCustomers([
-        savedCustomer,
-        ...customers.filter((item) => item.email.trim().toLowerCase() !== email.toLowerCase()),
-    ]);
-
-    const authUsers = readAuthUsers();
-    writeAuthUsers([
-        {
-            userId: auth?.userId ?? customer.id,
-            customerId: auth?.customerId ?? customer.customerId,
-            email,
-            fullName: auth?.fullName ?? payload.fullName,
-            password: payload.password,
-            roles: auth?.roles ?? ["Customer"],
-        },
-        ...authUsers.filter((item) => item.email.trim().toLowerCase() !== email.toLowerCase()),
-    ]);
-};
-
-const readActivity = (): CustomerActivity => {
-    const saved = localStorage.getItem(ACTIVITY_STORE_KEY);
-    if (saved) {
-        try {
-            return JSON.parse(saved) as CustomerActivity;
-        } catch {
-            localStorage.removeItem(ACTIVITY_STORE_KEY);
-        }
-    }
-
-    return {
-        appointments: [
-            {
-                id: "apt-demo-1",
-                customerName: "Demo Customer",
-                vehicleNumber: "BA-01-PA-1234",
-                serviceType: "Full service",
-                preferredDate: new Date().toISOString().slice(0, 10),
-                notes: "Engine oil, brake inspection, and wash.",
-                status: "Confirmed",
-            },
-        ],
-        partRequests: [
-            {
-                id: "part-demo-1",
-                customerName: "Demo Customer",
-                partName: "Toyota Corolla headlight assembly",
-                vehicleModel: "Corolla 2020",
-                urgency: "Normal",
-                status: "Sourcing",
-            },
-        ],
-        reviews: [
-            {
-                id: "review-demo-1",
-                serviceName: "Brake service",
-                rating: 5,
-                comment: "Clean work and clear billing.",
-                createdAt: new Date().toISOString(),
-            },
-        ],
-        history: [
-            {
-                id: "hist-demo-1",
-                type: "Service",
-                title: "Full service package",
-                date: "2026-04-05",
-                amount: 4200,
-                status: "Paid",
-            },
-            {
-                id: "hist-demo-2",
-                type: "Purchase",
-                title: "Engine oil and filter",
-                date: "2026-03-18",
-                amount: 6200,
-                status: "Paid with loyalty discount",
-            },
-        ],
-    };
-};
-
-const writeActivity = (activity: CustomerActivity) => {
-    localStorage.setItem(ACTIVITY_STORE_KEY, JSON.stringify(activity));
-};
-
-const toVehicle = (vehicle: BackendVehicle): Vehicle => ({
-    id: `${vehicle.vehicleId ?? createId("vehicle")}`,
-    vehicleNumber: vehicle.vehicleNumber ?? "",
-    vehicleBrand: vehicle.brand ?? vehicle.vehicleBrand ?? "",
-    vehicleModel: vehicle.model ?? vehicle.vehicleModel ?? "",
-    vehicleYear: `${vehicle.year ?? vehicle.vehicleYear ?? ""}`,
-});
-
-const toProfile = (
-    customer: BackendCustomer,
-    sales: BackendSale[] = [],
-    vehicles = customer.vehicles ?? []
-): CustomerProfile => {
-    const creditSales = sales.filter(
-        (sale) => sale.paymentStatus === "Pending" || sale.paymentStatus === "Credit"
-    );
-    const creditDueDate = creditSales[0]?.saleDate ?? "";
-
-    return {
-        id: `${customer.customerId ?? customer.email ?? createId("customer")}`,
-        customerId: customer.customerId,
-        fullName: customer.fullName ?? "",
-        email: customer.email ?? "",
-        phone: customer.phone ?? "",
-        creditBalance: creditSales.reduce(
-            (total, sale) => total + Number(sale.finalAmount ?? sale.subTotal ?? 0),
-            0
-        ),
-        creditDueDate,
-        totalSpend: sales.reduce(
-            (total, sale) => total + Number(sale.finalAmount ?? sale.subTotal ?? 0),
-            0
-        ),
-        vehicles: vehicles.map(toVehicle),
-    };
-};
-
-const toAppointment = (booking: BackendBooking, customerName = "Customer"): Appointment => ({
-    id: `${booking.serviceBookingId ?? createId("apt")}`,
-    customerName,
-    vehicleNumber: booking.vehicleNumber ?? "",
-    serviceType: "Vehicle service",
-    preferredDate: (booking.appointmentDate ?? new Date().toISOString()).slice(0, 10),
-    notes: booking.notes ?? "",
-    status: booking.status === "Completed"
-        ? "Completed"
-        : booking.status === "Confirmed"
-            ? "Confirmed"
-            : "Pending",
-});
-
-const toPartRequest = (request: BackendPartRequest, customerName = "Customer"): PartRequest => ({
-    id: `${request.partRequestId ?? createId("part")}`,
-    customerName,
-    partName: request.partName ?? "",
-    vehicleModel: request.vehicleModel ?? "",
-    urgency: request.details?.toLowerCase().includes("urgent") ? "Urgent" : "Normal",
-    status: request.status === "Arrived"
-        ? "Arrived"
-        : request.status === "Sourcing"
-            ? "Sourcing"
-            : "Requested",
-});
-
-const toAvailablePart = (part: BackendPart): AvailablePart => ({
-    partId: part.partId ?? Number(createId("catalog").replace(/\D/g, "").slice(-8)),
-    partName: part.partName ?? "Vehicle part",
-    price: Number(part.price ?? 0),
-    stockQuantity: Number(part.stockQuantity ?? 0),
-    vendorName: part.vendorName,
-    imageUrl: part.imageUrl,
-    vehicleBrand: part.vehicleBrand,
-    vehicleModel: part.vehicleModel,
-});
-
-const toReview = (review: BackendReview): ServiceReview => ({
-    id: `${review.serviceReviewId ?? createId("review")}`,
-    serviceName: "Vehicle service",
-    rating: review.rating ?? 5,
-    comment: review.comment ?? "",
-    createdAt: review.reviewedAt ?? new Date().toISOString(),
-});
-
-export const registerCustomer = async (payload: RegisterPayload) => {
-    const localCustomer = createLocalCustomer(payload);
-    const registration = {
-        fullName: payload.fullName,
-        email: payload.email.trim(),
-        password: payload.password,
-        phone: payload.phone,
-        vehicleNumber: payload.vehicleNumber,
-        vehicleBrand: payload.vehicleBrand,
-        vehicleModel: payload.vehicleModel,
-        vehicleYear: payload.vehicleYear ? Number(payload.vehicleYear) : null,
-    };
-
-    const response = await api.post<AuthResponse>("/auth/register", registration);
-    saveLocalRegistration(payload, localCustomer, response.data);
+}) => {
+    const response = await api.post("/auth/register", data);
     return response.data;
 };
 
-export const getCustomers = async () => {
-    try {
-        const response = await api.get<BackendCustomer[]>("/Customer");
-        const customers = response.data;
+export const getCustomers = async (): Promise<CustomerProfile[]> => {
+    const response = await api.get<CustomerProfile[]>("/customer");
 
-        return await Promise.all(
-            customers.map(async (customer) => {
-                const customerId = customer.customerId;
-                if (!customerId) return toProfile(customer);
-
-                const [vehiclesResponse, salesResponse] = await Promise.allSettled([
-                    api.get<BackendVehicle[]>(`/Customer/${customerId}/vehicles`),
-                    api.get<BackendSale[]>(`/sales/customer/${customerId}`),
-                ]);
-
-                const vehicles =
-                    vehiclesResponse.status === "fulfilled"
-                        ? vehiclesResponse.value.data
-                        : [];
-                const sales =
-                    salesResponse.status === "fulfilled"
-                        ? salesResponse.value.data
-                        : [];
-
-                return toProfile(customer, sales, vehicles);
-            })
-        );
-    } catch {
-        return readCustomers();
-    }
+    return response.data.map((customer) => ({
+        ...customer,
+        vehicles: customer.vehicles ?? [],
+    }));
 };
 
-export const getCustomerProfile = async (email?: string, customerId?: number) => {
-    try {
-        if (!customerId) throw new Error("Customer ID missing");
+export const getCustomerProfile = async (
+    email?: string,
+    customerId?: number
+): Promise<CustomerProfile> => {
 
-        const [profileResponse, salesResponse] = await Promise.allSettled([
-            api.get<BackendCustomer>(`/customer-profile/${customerId}`),
-            api.get<BackendSale[]>("/sales/my-history"),
-        ]);
-
-        if (profileResponse.status !== "fulfilled") {
-            throw new Error("Profile request failed");
-        }
-
-        const sales =
-            salesResponse.status === "fulfilled"
-                ? salesResponse.value.data
-                : [];
-
-        return toProfile(profileResponse.value.data, sales, profileResponse.value.data.vehicles);
-    } catch {
-        const customers = readCustomers();
-        const existing = customers.find((item) => item.email === email);
-        if (existing) return existing;
-
-        const fallback: CustomerProfile = {
-            id: "customer-demo",
+    if (!customerId) {
+        return {
+            id: "1",
             fullName: "Demo Customer",
-            email: email ?? "customer@example.com",
+            email: email || "demo@gmail.com",
             phone: "9800000000",
-            creditBalance: 3500,
-            creditDueDate: "2026-03-20",
-            totalSpend: 10400,
-            vehicles: [
-                {
-                    id: "vehicle-demo",
-                    vehicleNumber: "BA-01-PA-1234",
-                    vehicleBrand: "Toyota",
-                    vehicleModel: "Corolla",
-                    vehicleYear: "2020",
-                },
-            ],
+            creditBalance: 0,
+            creditDueDate: "",
+            totalSpend: 0,
+            vehicles: [],
         };
-
-        writeCustomers([fallback, ...customers]);
-        return fallback;
     }
+
+    const response = await api.get(`/customer-profile/${customerId}`);
+    return response.data;
 };
 
-export const saveCustomerProfile = async (profile: CustomerProfile) => {
-    try {
-        if (!profile.customerId) throw new Error("Customer ID missing");
+export const saveCustomerProfile = async (
+    profile: CustomerProfile
+) => {
 
-        const response = await api.put<BackendCustomer>(
-            `/customer-profile/${profile.customerId}`,
-            {
-                fullName: profile.fullName,
-                phone: profile.phone,
-                email: profile.email,
-            }
-        );
-
-        return toProfile(response.data, [], response.data.vehicles);
-    } catch {
-        const customers = readCustomers();
-        writeCustomers(customers.map((item) => (item.id === profile.id ? profile : item)));
+    if (!profile.customerId) {
         return profile;
     }
+
+    const response = await api.put(
+        `/customer-profile/${profile.customerId}`,
+        {
+            fullName: profile.fullName,
+            phone: profile.phone,
+            email: profile.email,
+        }
+    );
+
+    return response.data;
 };
 
 export const addCustomerVehicle = async (
     customerId: number,
     vehicle: Vehicle
-) => {
-    const response = await api.post<BackendVehicle>("/Customer/vehicle", {
+): Promise<Vehicle> => {
+
+    const response = await api.post("/customer/vehicle", {
         customerId,
         vehicleNumber: vehicle.vehicleNumber,
-        model: [vehicle.vehicleBrand, vehicle.vehicleModel, vehicle.vehicleYear]
-            .filter(Boolean)
-            .join(" "),
+        model: `${vehicle.vehicleBrand} ${vehicle.vehicleModel} ${vehicle.vehicleYear}`,
     });
 
-    return toVehicle(response.data);
+    return {
+        id: String(response.data.vehicleId || Date.now()),
+        vehicleId: response.data.vehicleId,
+        vehicleNumber: response.data.vehicleNumber,
+        vehicleBrand: vehicle.vehicleBrand,
+        vehicleModel: vehicle.vehicleModel,
+        vehicleYear: vehicle.vehicleYear,
+    };
 };
 
-export const getCustomerActivity = async (customerId?: number, customerName = "Customer") => {
-    try {
-        if (!customerId) throw new Error("Customer ID missing");
+export const getCustomerActivity = async (
+    customerId?: number,
+    customerName = "Customer"
+): Promise<CustomerActivity> => {
 
-        const [bookingResponse, requestResponse, reviewResponse, salesResponse] =
-            await Promise.allSettled([
-                api.get<BackendBooking[]>(`/customer-bookings/customer/${customerId}`),
-                api.get<BackendPartRequest[]>(`/customer-requests/customer/${customerId}`),
-                api.get<BackendReview[]>(`/customer-reviews/customer/${customerId}`),
-                api.get<BackendSale[]>("/sales/my-history"),
-            ]);
-
-        const bookings =
-            bookingResponse.status === "fulfilled" ? bookingResponse.value.data : [];
-        const requests =
-            requestResponse.status === "fulfilled" ? requestResponse.value.data : [];
-        const reviews =
-            reviewResponse.status === "fulfilled" ? reviewResponse.value.data : [];
-        const sales =
-            salesResponse.status === "fulfilled" ? salesResponse.value.data : [];
-
+    if (!customerId) {
         return {
-            appointments: bookings.map((booking) => toAppointment(booking, customerName)),
-            partRequests: requests.map((request) => toPartRequest(request, customerName)),
-            reviews: reviews.map(toReview),
-            history: [
-                ...sales.map((sale) => ({
-                    id: `${sale.saleId ?? createId("sale")}`,
-                    type: "Purchase" as const,
-                    title: `Sale #${sale.saleId ?? ""}`.trim(),
-                    date: (sale.saleDate ?? new Date().toISOString()).slice(0, 10),
-                    amount: Number(sale.finalAmount ?? sale.subTotal ?? 0),
-                    status: sale.paymentStatus ?? "Paid",
-                })),
-                ...bookings.map((booking) => ({
-                    id: `${booking.serviceBookingId ?? createId("booking")}`,
-                    type: "Service" as const,
-                    title: booking.notes || "Service booking",
-                    date: (booking.appointmentDate ?? new Date().toISOString()).slice(0, 10),
-                    amount: 0,
-                    status: booking.status ?? "Pending",
-                })),
-            ],
+            appointments: [],
+            partRequests: [],
+            reviews: [],
+            history: [],
         };
-    } catch {
-        return readActivity();
     }
+
+    const [bookings, requests, reviews, sales] =
+        await Promise.all([
+            api.get(`/customer-bookings/customer/${customerId}`),
+            api.get(`/customer-requests/customer/${customerId}`),
+            api.get(`/customer-reviews/customer/${customerId}`),
+            api.get(`/sales/customer/${customerId}`),
+        ]);
+
+    return {
+        appointments: bookings.data.map((item: {
+            serviceBookingId: number;
+            vehicleNumber: string;
+            appointmentDate: string;
+            notes: string;
+            status: "Pending" | "Confirmed" | "Completed";
+        }) => ({
+            id: String(item.serviceBookingId),
+            serviceBookingId: item.serviceBookingId,
+            customerName,
+            vehicleNumber: item.vehicleNumber,
+            serviceType: "Vehicle Service",
+            preferredDate: item.appointmentDate,
+            notes: item.notes,
+            status: item.status || "Pending",
+        })),
+
+        partRequests: requests.data.map((item: {
+            partRequestId: number;
+            partName: string;
+            vehicleModel: string;
+            status: "Requested" | "Sourcing" | "Arrived";
+        }) => ({
+            id: String(item.partRequestId),
+            partRequestId: item.partRequestId,
+            customerName,
+            partName: item.partName,
+            vehicleModel: item.vehicleModel,
+            urgency: "Normal",
+            status: item.status || "Requested",
+        })),
+
+        reviews: reviews.data.map((item: {
+            serviceReviewId: number;
+            rating: number;
+            comment: string;
+            reviewedAt: string;
+        }) => ({
+            id: String(item.serviceReviewId),
+            serviceReviewId: item.serviceReviewId,
+            serviceName: "Vehicle Service",
+            rating: item.rating,
+            comment: item.comment,
+            createdAt: item.reviewedAt,
+        })),
+
+        history: sales.data.map((item: {
+            saleId: number;
+            saleDate: string;
+            finalAmount: number;
+            paymentStatus: string;
+        }) => ({
+            id: String(item.saleId),
+            type: "Purchase",
+            title: `Sale #${item.saleId}`,
+            date: item.saleDate,
+            amount: item.finalAmount,
+            status: item.paymentStatus,
+        })),
+    };
 };
 
-export const getAvailableParts = async () => {
-    try {
-        const response = await api.get<BackendPart[]>("/Part");
-        return response.data
-            .map(toAvailablePart)
-            .filter((part) => part.stockQuantity > 0);
-    } catch {
-        return [] as AvailablePart[];
-    }
+export const getAvailableParts = async (): Promise<AvailablePart[]> => {
+    const response = await api.get("/part");
+    return response.data;
 };
 
 export const bookAppointment = async (
-    appointment: Omit<Appointment, "id" | "status">,
+    data: {
+        customerName: string;
+        vehicleNumber: string;
+        serviceType: string;
+        preferredDate: string;
+        notes: string;
+    },
     customerId?: number
-) => {
-    try {
-        if (!customerId) throw new Error("Customer ID missing");
+): Promise<Appointment> => {
 
-        const response = await api.post<BackendBooking>("/customer-bookings", {
+    const response = await api.post(
+        "/customer-bookings",
+        {
             customerId,
-            vehicleNumber: appointment.vehicleNumber,
-            appointmentDate: appointment.preferredDate,
-            notes: `${appointment.serviceType}${appointment.notes ? ` - ${appointment.notes}` : ""}`,
-        });
+            vehicleNumber: data.vehicleNumber,
+            appointmentDate: data.preferredDate,
+            notes: data.notes,
+        }
+    );
 
-        return toAppointment(response.data, appointment.customerName);
-    } catch {
-        const activity = readActivity();
-        const created: Appointment = {
-            ...appointment,
-            id: createId("apt"),
-            status: "Pending",
-        };
-        writeActivity({
-            ...activity,
-            appointments: [created, ...activity.appointments],
-        });
-        return created;
-    }
+    return {
+        id: String(response.data.serviceBookingId),
+        serviceBookingId: response.data.serviceBookingId,
+        customerName: data.customerName,
+        vehicleNumber: data.vehicleNumber,
+        serviceType: data.serviceType,
+        preferredDate: data.preferredDate,
+        notes: data.notes,
+        status: response.data.status || "Pending",
+    };
 };
 
 export const requestPart = async (
-    request: Omit<PartRequest, "id" | "status">,
+    data: {
+        customerName: string;
+        partName: string;
+        vehicleModel: string;
+        urgency: "Normal" | "Urgent";
+    },
     customerId?: number
-) => {
-    try {
-        if (!customerId) throw new Error("Customer ID missing");
+): Promise<PartRequest> => {
 
-        const response = await api.post<BackendPartRequest>("/customer-requests", {
+    const response = await api.post(
+        "/customer-requests",
+        {
             customerId,
-            partName: request.partName,
-            vehicleModel: request.vehicleModel,
-            details: request.urgency,
-        });
+            partName: data.partName,
+            vehicleModel: data.vehicleModel,
+            details: data.urgency,
+        }
+    );
 
-        return toPartRequest(response.data, request.customerName);
-    } catch {
-        const activity = readActivity();
-        const created: PartRequest = {
-            ...request,
-            id: createId("part"),
-            status: "Requested",
-        };
-        writeActivity({
-            ...activity,
-            partRequests: [created, ...activity.partRequests],
-        });
-        return created;
-    }
+    return {
+        id: String(response.data.partRequestId),
+        partRequestId: response.data.partRequestId,
+        customerName: data.customerName,
+        partName: data.partName,
+        vehicleModel: data.vehicleModel,
+        urgency: data.urgency,
+        status: response.data.status || "Requested",
+    };
 };
 
 export const submitReview = async (
-    review: Omit<ServiceReview, "id" | "createdAt">,
+    data: {
+        serviceName: string;
+        rating: number;
+        comment: string;
+    },
     customerId?: number
-) => {
-    try {
-        if (!customerId) throw new Error("Customer ID missing");
+): Promise<ServiceReview> => {
 
-        const response = await api.post<BackendReview>("/customer-reviews", {
+    const response = await api.post(
+        "/customer-reviews",
+        {
             customerId,
-            rating: review.rating,
-            comment: `${review.serviceName}${review.comment ? ` - ${review.comment}` : ""}`,
-        });
+            rating: data.rating,
+            comment: data.comment,
+        }
+    );
 
-        return toReview(response.data);
-    } catch {
-        const activity = readActivity();
-        const created: ServiceReview = {
-            ...review,
-            id: createId("review"),
-            createdAt: new Date().toISOString(),
-        };
-        writeActivity({
-            ...activity,
-            reviews: [created, ...activity.reviews],
-        });
-        return created;
-    }
+    return {
+        id: String(response.data.serviceReviewId),
+        serviceReviewId: response.data.serviceReviewId,
+        serviceName: data.serviceName,
+        rating: data.rating,
+        comment: data.comment,
+        createdAt: new Date().toISOString(),
+    };
 };
 
 export const calculateLoyaltyDiscount = (amount: number) => {
-    const discount = amount > 5000 ? amount * 0.1 : 0;
+
+    const discount = amount > 5000
+        ? amount * 0.1
+        : 0;
+
     return {
         discount,
         payable: amount - discount,
     };
 };
 
-export const initiateEsewaPayment = async (saleId: number) => {
-    const response = await api.post<EsewaPaymentInitiation>(
-        `/esewa/sales/${saleId}/initiate`,
-        {
-            taxAmount: 0,
-            productServiceCharge: 0,
-            productDeliveryCharge: 0,
-        },
-        {
-            timeout: 1500,
-        }
+export const initiateEsewaPayment = async (
+    saleId: number
+): Promise<EsewaPaymentInitiation> => {
+
+    const response = await api.post(
+        `/esewa/sales/${saleId}/initiate`
     );
 
     return response.data;
 };
 
-export const initiateDirectEsewaPayment = async (amount: number) => {
-    const response = await api.post<EsewaPaymentInitiation>(
+export const createEsewaPayment = async (
+    amount: number
+): Promise<EsewaPaymentInitiation> => {
+
+    const response = await api.post(
         "/esewa/initiate",
         {
             amount,
-            taxAmount: 0,
-            productServiceCharge: 0,
-            productDeliveryCharge: 0,
-        },
-        {
-            timeout: 1500,
         }
     );
 
     return response.data;
 };
-
-export const createEsewaPayment = async (amount: number) => {
-    return createLocalEsewaTestPayment(amount);
-};
-
-const createLocalEsewaTestPayment = async (amount: number): Promise<EsewaPaymentInitiation> => {
-    const safeAmount = Math.max(Number(amount) || 0, 1);
-    const formattedAmount = formatEsewaAmount(safeAmount);
-    const transactionUuid = `AXLEWORKS-${Date.now()}`;
-    const message = `total_amount=${formattedAmount},transaction_uuid=${transactionUuid},product_code=${ESEWA_TEST_PRODUCT_CODE}`;
-    const signature = await signEsewaMessage(message);
-    const callbackUrl = `${window.location.origin}/customer/payments`;
-
-    return {
-        saleId: 0,
-        formAction: ESEWA_TEST_FORM_URL,
-        method: "POST",
-        fields: {
-            amount: formattedAmount,
-            tax_amount: "0",
-            total_amount: formattedAmount,
-            transaction_uuid: transactionUuid,
-            product_code: ESEWA_TEST_PRODUCT_CODE,
-            product_service_charge: "0",
-            product_delivery_charge: "0",
-            success_url: `${callbackUrl}?payment=success`,
-            failure_url: `${callbackUrl}?payment=failed`,
-            signed_field_names: ESEWA_SIGNED_FIELD_NAMES,
-            signature,
-        },
-    };
-};
-
-const signEsewaMessage = async (message: string) => {
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-        "raw",
-        encoder.encode(ESEWA_TEST_SECRET),
-        { name: "HMAC", hash: "SHA-256" },
-        false,
-        ["sign"]
-    );
-    const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(message));
-
-    return btoa(String.fromCharCode(...new Uint8Array(signature)));
-};
-
-const formatEsewaAmount = (amount: number) =>
-    amount.toFixed(2).replace(/\.?0+$/, "");

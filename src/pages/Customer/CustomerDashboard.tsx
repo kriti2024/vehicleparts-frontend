@@ -96,47 +96,47 @@ const sectionCopy = {
     dashboard: {
         eyebrow: "Axleworks",
         title: "Overview",
-        subtitle: "A polished pulse on your vehicles, bookings, requests, and rewards.",
+        subtitle: "Manage bookings, parts, payments, and vehicle services.",
     },
     profile: {
         eyebrow: "Customer",
         title: "Profile & Vehicles",
-        subtitle: "Keep your contact details and vehicle records ready for service.",
+        subtitle: "Manage your profile and vehicle details.",
     },
     appointments: {
         eyebrow: "Service Desk",
         title: "Appointments",
-        subtitle: "Book visits, track service status, and share feedback.",
+        subtitle: "Book services and submit service reviews.",
     },
     catalog: {
         eyebrow: "Parts Store",
         title: "Available Parts",
-        subtitle: "Browse stocked parts with photos, fitment notes, price, and availability.",
+        subtitle: "Browse available vehicle parts and stock details.",
     },
     parts: {
         eyebrow: "Parts Concierge",
         title: "Unavailable Parts",
-        subtitle: "Request hard-to-find parts and follow sourcing progress.",
+        subtitle: "Request unavailable parts and track their status.",
     },
     payments: {
         eyebrow: "Billing",
         title: "Payments & Credit",
-        subtitle: "Review balances, payment options, and invoice readiness.",
+        subtitle: "View credit balance, loyalty discount, and payment options.",
     },
     support: {
         eyebrow: "Care Desk",
         title: "Support Center",
-        subtitle: "Ask for help, raise concerns, and get quick contact options.",
+        subtitle: "Create support tickets and contact the service team.",
     },
     notifications: {
         eyebrow: "Alerts",
         title: "Notifications",
-        subtitle: "See service reminders, part updates, and account messages in one place.",
+        subtitle: "View service, part request, and payment reminders.",
     },
     history: {
         eyebrow: "Account",
         title: "History & Loyalty",
-        subtitle: "Review purchases, services, credits, and discount eligibility.",
+        subtitle: "Review your purchase and service history.",
     },
 };
 
@@ -335,7 +335,6 @@ export default function CustomerDashboard() {
     const [availableParts, setAvailableParts] = useState<AvailablePart[]>(fallbackAvailableParts);
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState("");
-    const [purchaseAmount, setPurchaseAmount] = useState(5200);
     const [appointmentForm, setAppointmentForm] = useState({
         serviceType: "Full service",
         vehicleNumber: "",
@@ -394,7 +393,6 @@ export default function CustomerDashboard() {
         loadCustomer();
     }, [user?.customerId, user?.email, user?.fullName]);
 
-    const loyalty = calculateLoyaltyDiscount(purchaseAmount);
     const nextAppointment = activity.appointments[0];
     const openRequests = activity.partRequests.filter((item) => item.status !== "Arrived").length;
     const averageRating = activity.reviews.length === 0
@@ -407,6 +405,7 @@ export default function CustomerDashboard() {
         monthAgo.setMonth(monthAgo.getMonth() - 1);
         return dueDate < monthAgo;
     }, [profile]);
+    const loyalty = calculateLoyaltyDiscount(profile?.totalSpend ?? 0);
 
     const updateProfileField = (field: keyof CustomerProfile, value: string) => {
         if (!profile) return;
@@ -523,7 +522,7 @@ export default function CustomerDashboard() {
 
             const amount = profile.creditBalance > 0
                 ? profile.creditBalance
-                : Math.max(purchaseAmount, 1);
+                : Math.max(profile.totalSpend ?? 1, 1);
             const payment = await createEsewaPayment(amount);
             setEsewaPayment(payment);
             setMessage("Payment ready. Continue to eSewa.");
@@ -618,10 +617,6 @@ export default function CustomerDashboard() {
                     <HistoryPage
                         profile={profile}
                         activity={activity}
-                        purchaseAmount={purchaseAmount}
-                        setPurchaseAmount={setPurchaseAmount}
-                        loyalty={loyalty}
-                        creditIsOverdue={creditIsOverdue}
                     />
                 )}
 
@@ -630,7 +625,6 @@ export default function CustomerDashboard() {
                         profile={profile}
                         loyalty={loyalty}
                         creditIsOverdue={creditIsOverdue}
-                        purchaseAmount={purchaseAmount}
                         onPayWithEsewa={handleEsewaPayment}
                         paymentLoading={paymentLoading}
                         esewaPayment={esewaPayment}
@@ -740,21 +734,6 @@ function Overview({
                         />
                     </div>
 
-                    <div className="mt-8 h-48 rounded-3xl bg-[oklch(0.92_0.014_80)] p-6">
-                        <div className="flex h-full items-end gap-3">
-                            {[42, 68, 54, 76, 60, 88, 95, 72, 86, 100, 70, 82].map((height, index) => (
-                                <div key={index} className="flex flex-1 flex-col items-center gap-3">
-                                    <div
-                                        className="w-full rounded-t-xl bg-[oklch(0.28_0.012_60)]"
-                                        style={{ height: `${height}%` }}
-                                    />
-                                    <span className="text-[10px] uppercase tracking-[0.18em] text-[oklch(0.45_0.012_70)]">
-                                        {new Date(2026, index).toLocaleString("en", { month: "short" })}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
                 </Panel>
 
                 <Panel title="Recent Activity">
@@ -796,91 +775,18 @@ function ProfilePage({
     removeVehicle: (id: string) => void;
     saveProfile: () => void;
 }) {
-    const completedItems = [
-        !!profile.fullName,
-        !!profile.email,
-        !!profile.phone,
-        profile.vehicles.length > 0,
-    ].filter(Boolean).length;
-    const completion = Math.round((completedItems / 4) * 100);
-
     return (
         <div className="space-y-6">
-            <div className="grid xl:grid-cols-3 gap-6">
-                <div className="xl:col-span-2 rounded-3xl border border-[oklch(0.88_0.012_80)] bg-[oklch(0.985_0.008_85)] p-7">
-                    <div className="flex flex-wrap items-start justify-between gap-6">
-                        <div className="flex items-center gap-5">
-                            <div className="grid h-20 w-20 place-items-center rounded-3xl bg-[oklch(0.74_0.16_65)] text-3xl font-bold text-[oklch(0.18_0.012_60)] shadow-sm">
-                                {profile.fullName.charAt(0) || "C"}
-                            </div>
-                            <div>
-                                <div className="text-[11px] uppercase tracking-[0.35em] text-[oklch(0.48_0.04_65)]">
-                                    Customer Account
-                                </div>
-                                <h2 className="mt-2 text-3xl font-bold tracking-tight text-[oklch(0.16_0.01_60)]">
-                                    {profile.fullName || "Customer"}
-                                </h2>
-                                <div className="mt-4 flex flex-wrap gap-2">
-                                    <ProfileChip label="Email" value={profile.email || "Not added"} />
-                                    <ProfileChip label="Phone" value={profile.phone || "Not added"} />
-                                    <ProfileChip label="Vehicles" value={`${profile.vehicles.length}`} />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="w-full max-w-xs rounded-3xl bg-[oklch(0.94_0.01_80)] p-5">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <div className="text-[10px] uppercase tracking-[0.28em] text-[oklch(0.5_0.012_70)]">
-                                        Profile Score
-                                    </div>
-                                    <div className="mt-2 text-3xl font-bold">{completion}%</div>
-                                </div>
-                                <CheckCircle2 className="h-7 w-7 text-green-600" />
-                            </div>
-                            <div className="mt-4 h-2 rounded-full bg-white">
-                                <div
-                                    className="h-2 rounded-full bg-[oklch(0.74_0.16_65)]"
-                                    style={{ width: `${completion}%` }}
-                                />
-                            </div>
-                            <p className="mt-3 text-sm text-[oklch(0.5_0.012_70)]">
-                                Complete profiles help staff prepare faster.
-                            </p>
-                        </div>
+            <Panel title="Personal Details">
+                <div className="grid md:grid-cols-2 gap-5">
+                    <Field label="Full Name" value={profile.fullName} onChange={(value) => updateProfileField("fullName", value)} />
+                    <Field label="Email" value={profile.email} onChange={(value) => updateProfileField("email", value)} />
+                    <Field label="Phone" value={profile.phone} onChange={(value) => updateProfileField("phone", value)} />
+                    <div className="flex items-end">
+                        <PrimaryButton icon={Save} label="Save Profile" onClick={saveProfile} type="button" />
                     </div>
                 </div>
-
-                <Panel title="Service Readiness">
-                    <div className="space-y-3">
-                        <MiniStat label="Vehicles" value={`${profile.vehicles.length}`} />
-                        <MiniStat label="Primary Plate" value={profile.vehicles[0]?.vehicleNumber || "Not set"} />
-                        <MiniStat label="Account ID" value={profile.customerId ? `#${profile.customerId}` : "Local"} />
-                    </div>
-                </Panel>
-            </div>
-
-            <div className="grid xl:grid-cols-3 gap-6">
-                <Panel className="xl:col-span-2" title="Personal Details">
-                    <div className="grid md:grid-cols-2 gap-5">
-                        <Field label="Full Name" value={profile.fullName} onChange={(value) => updateProfileField("fullName", value)} />
-                        <Field label="Email" value={profile.email} onChange={(value) => updateProfileField("email", value)} />
-                        <Field label="Phone" value={profile.phone} onChange={(value) => updateProfileField("phone", value)} />
-                        <div className="flex items-end">
-                            <PrimaryButton icon={Save} label="Save Profile" onClick={saveProfile} type="button" />
-                        </div>
-                    </div>
-                </Panel>
-
-                <Panel title="Profile Quality">
-                    <div className="space-y-4">
-                        <Checklist done={!!profile.fullName} label="Name added" />
-                        <Checklist done={!!profile.email} label="Email connected" />
-                        <Checklist done={!!profile.phone} label="Phone verified" />
-                        <Checklist done={profile.vehicles.length > 0} label="Vehicle registered" />
-                    </div>
-                </Panel>
-            </div>
+            </Panel>
 
             <Panel title="Vehicle Garage">
                 <div className="grid xl:grid-cols-2 gap-5">
@@ -1199,188 +1105,49 @@ function PartsPage({
     requests: PartRequest[];
     handlePartRequest: (event: React.FormEvent) => void;
 }) {
-    const requestMetrics = [
-        {
-            label: "Total requests",
-            value: `${requests.length}`,
-            hint: "All submitted requests",
-            icon: PackageSearch,
-        },
-        {
-            label: "In sourcing",
-            value: `${requests.filter((item) => item.status === "Sourcing").length}`,
-            hint: "Being checked by staff",
-            icon: Clock,
-        },
-        {
-            label: "Arrived",
-            value: `${requests.filter((item) => item.status === "Arrived").length}`,
-            hint: "Ready for follow-up",
-            icon: CheckCircle2,
-        },
-    ];
-
-    const quickPicks = [
-        {
-            name: "Headlight Assembly",
-            model: "Corolla / Civic",
-            note: "Most requested",
-        },
-        {
-            name: "Side Mirror",
-            model: "Hyundai / Suzuki",
-            note: "Body part",
-        },
-        {
-            name: "AC Compressor",
-            model: "Sedan / SUV",
-            note: "Comfort system",
-        },
-        {
-            name: "Door Handle",
-            model: "Universal fitment",
-            note: "Exterior trim",
-        },
-    ];
-
     return (
-        <div className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-3">
-                {requestMetrics.map((metric) => (
-                    <div
-                        key={metric.label}
-                        className="rounded-3xl border border-[oklch(0.88_0.012_80)] bg-white p-5"
-                    >
-                        <div className="flex items-center justify-between">
-                            <div className="text-[10px] uppercase tracking-[0.24em] text-[oklch(0.5_0.012_70)]">
-                                {metric.label}
-                            </div>
-                            <metric.icon className="h-4 w-4 text-[oklch(0.52_0.13_72)]" />
-                        </div>
-                        <div className="mt-4 text-4xl font-bold tracking-tight">
-                            {metric.value}
-                        </div>
-                        <div className="mt-2 text-sm text-[oklch(0.48_0.015_70)]">
-                            {metric.hint}
-                        </div>
+        <div className="grid xl:grid-cols-3 gap-6">
+            <Panel className="xl:col-span-2" title="Request a Part">
+                <form onSubmit={handlePartRequest} className="grid md:grid-cols-2 gap-5">
+                    <Field
+                        label="Part Name"
+                        value={partForm.partName}
+                        onChange={(value) => setPartForm({ ...partForm, partName: value })}
+                    />
+                    <Field
+                        label="Vehicle Model"
+                        value={partForm.vehicleModel}
+                        onChange={(value) => setPartForm({ ...partForm, vehicleModel: value })}
+                    />
+                    <SelectField
+                        label="Priority"
+                        value={partForm.urgency}
+                        options={["Normal", "Urgent"]}
+                        onChange={(value) => setPartForm({ ...partForm, urgency: value as PartRequest["urgency"] })}
+                    />
+                    <div className="flex items-end">
+                        <PrimaryButton icon={Send} label="Send Request" />
                     </div>
-                ))}
-            </div>
+                </form>
+            </Panel>
 
-            <div className="grid xl:grid-cols-3 gap-6">
-                <Panel className="xl:col-span-2" title="Request a Part">
-                    <form onSubmit={handlePartRequest} className="space-y-6">
-                        <div className="rounded-3xl border border-[oklch(0.88_0.018_82)] bg-white p-5">
-                            <div className="flex flex-wrap items-center justify-between gap-4">
-                                <div>
-                                    <div className="text-[10px] uppercase tracking-[0.28em] text-[oklch(0.48_0.04_65)]">
-                                        Sourcing desk
-                                    </div>
-                                    <h2 className="mt-2 text-2xl font-bold tracking-tight">
-                                        Tell us what you could not find.
-                                    </h2>
-                                    <p className="mt-2 text-sm leading-6 text-[oklch(0.48_0.015_70)]">
-                                        Add the exact part name and vehicle model. Staff can then check vendors, confirm availability, and update your request status.
-                                    </p>
-                                </div>
-                                <div className="grid h-14 w-14 place-items-center rounded-2xl bg-[oklch(0.94_0.12_82)]">
-                                    <PackageSearch className="h-6 w-6 text-[oklch(0.34_0.075_65)]" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="grid md:grid-cols-2 gap-5">
-                            <Field
-                                label="Part Name"
-                                value={partForm.partName}
-                                onChange={(value) => setPartForm({ ...partForm, partName: value })}
-                            />
-                            <Field
-                                label="Vehicle Model"
-                                value={partForm.vehicleModel}
-                                onChange={(value) => setPartForm({ ...partForm, vehicleModel: value })}
-                            />
-                            <SelectField
-                                label="Priority"
-                                value={partForm.urgency}
-                                options={["Normal", "Urgent"]}
-                                onChange={(value) => setPartForm({ ...partForm, urgency: value as PartRequest["urgency"] })}
-                            />
-                            <div className="flex items-end">
-                                <PrimaryButton icon={Send} label="Send Request" />
-                            </div>
-                        </div>
-                    </form>
-
-                    <div className="mt-8 border-t border-[oklch(0.88_0.012_80)] pt-6">
-                        <div className="flex flex-wrap items-end justify-between gap-3">
-                            <div>
-                                <div className="text-[10px] uppercase tracking-[0.28em] text-[oklch(0.48_0.04_65)]">
-                                    Quick picks
-                                </div>
-                                <h3 className="mt-2 text-lg font-bold tracking-tight">
-                                    Tap a common unavailable part
-                                </h3>
-                            </div>
-                        </div>
-
-                        <div className="mt-4 grid gap-3 md:grid-cols-2">
-                            {quickPicks.map((item) => (
-                                <button
-                                    key={item.name}
-                                    type="button"
-                                    onClick={() =>
-                                        setPartForm({
-                                            partName: item.name,
-                                            vehicleModel: item.model,
-                                            urgency: item.note === "Most requested" ? "Urgent" : "Normal",
-                                        })
-                                    }
-                                    className="rounded-2xl border border-[oklch(0.88_0.012_80)] bg-white p-4 text-left transition hover:-translate-y-0.5 hover:border-[oklch(0.72_0.15_72)]"
-                                >
-                                    <div className="flex items-center justify-between gap-3">
-                                        <div className="font-semibold">{item.name}</div>
-                                        <span className="rounded-full bg-[oklch(0.94_0.01_80)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[oklch(0.45_0.012_70)]">
-                                            {item.note}
-                                        </span>
-                                    </div>
-                                    <div className="mt-2 text-sm text-[oklch(0.5_0.012_70)]">
-                                        {item.model}
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
+            <Panel title="Request Status">
+                {requests.length === 0 ? (
+                    <div className="rounded-3xl bg-[oklch(0.94_0.01_80)] p-7 text-center">
+                        <PackageSearch className="mx-auto h-7 w-7 text-[oklch(0.45_0.012_70)]" />
+                        <div className="mt-4 text-lg font-bold">No part requests yet</div>
+                        <p className="mt-2 text-sm leading-6 text-[oklch(0.5_0.012_70)]">
+                            Submitted requests and sourcing updates will appear here.
+                        </p>
                     </div>
-                </Panel>
-
-                <div className="space-y-6">
-                    <Panel title="Request Status">
-                        {requests.length === 0 ? (
-                            <div className="rounded-3xl bg-[oklch(0.94_0.01_80)] p-7 text-center">
-                                <PackageSearch className="mx-auto h-7 w-7 text-[oklch(0.45_0.012_70)]" />
-                                <div className="mt-4 text-lg font-bold">No part requests yet</div>
-                                <p className="mt-2 text-sm leading-6 text-[oklch(0.5_0.012_70)]">
-                                    Submit a request or use a quick pick. New sourcing updates will appear here.
-                                </p>
-                            </div>
-                        ) : (
-                            <div className="space-y-3">
-                                {requests.map((item) => (
-                                    <PartRequestCard key={item.id} item={item} />
-                                ))}
-                            </div>
-                        )}
-                    </Panel>
-
-                    <Panel title="How It Works">
-                        <div className="space-y-3">
-                            <RequestStep number="01" title="Submit details" text="Send the part name and vehicle model." />
-                            <RequestStep number="02" title="Vendor check" text="Staff checks stock and sourcing options." />
-                            <RequestStep number="03" title="Status update" text="Track requested, sourcing, and arrived states." />
-                        </div>
-                    </Panel>
-                </div>
-            </div>
+                ) : (
+                    <div className="space-y-3">
+                        {requests.map((item) => (
+                            <PartRequestCard key={item.id} item={item} />
+                        ))}
+                    </div>
+                )}
+            </Panel>
         </div>
     );
 }
@@ -1415,116 +1182,107 @@ function PartRequestCard({ item }: { item: PartRequest }) {
     );
 }
 
-function RequestStep({
-    number,
-    title,
-    text,
-}: {
-    number: string;
-    title: string;
-    text: string;
-}) {
-    return (
-        <div className="flex gap-3 rounded-2xl bg-[oklch(0.94_0.01_80)] p-4">
-            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white text-[10px] font-bold tracking-[0.12em] text-[oklch(0.42_0.05_65)]">
-                {number}
-            </div>
-            <div>
-                <div className="text-sm font-bold">{title}</div>
-                <div className="mt-1 text-xs leading-5 text-[oklch(0.5_0.012_70)]">
-                    {text}
-                </div>
-            </div>
-        </div>
-    );
-}
-
 function HistoryPage({
-    profile,
     activity,
-    purchaseAmount,
-    setPurchaseAmount,
-    loyalty,
-    creditIsOverdue,
+    profile,
 }: {
-    profile: CustomerProfile;
     activity: CustomerActivity;
-    purchaseAmount: number;
-    setPurchaseAmount: (value: number) => void;
-    loyalty: { discount: number; payable: number };
-    creditIsOverdue: boolean;
+    profile: CustomerProfile;
 }) {
     return (
-        <div className="grid xl:grid-cols-3 gap-6">
-            <Panel className="xl:col-span-2" title="Purchase & Service History">
+        <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+
+            {/* HISTORY */}
+            <Panel title="Purchase & Service History">
+
                 {activity.history.length === 0 ? (
-                    <EmptyState title="No history yet" text="Completed purchases and services will appear here." />
+                    <div className="rounded-2xl border border-border p-10 text-center">
+                        <History className="mx-auto h-8 w-8 opacity-50" />
+
+                        <h3 className="mt-4 text-lg font-semibold">
+                            No history available
+                        </h3>
+
+                        <p className="mt-2 text-sm text-muted-foreground">
+                            Purchases and services will appear here.
+                        </p>
+                    </div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-[oklch(0.88_0.012_80)] text-left">
-                                    <th className="py-4 pr-4">Record</th>
-                                    <th className="py-4 pr-4">Type</th>
-                                    <th className="py-4 pr-4">Date</th>
-                                    <th className="py-4 pr-4">Amount</th>
-                                    <th className="py-4 pr-4">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {activity.history.map((item) => (
-                                    <tr key={item.id} className="border-b border-[oklch(0.88_0.012_80)]">
-                                        <td className="py-4 pr-4 font-semibold">{item.title}</td>
-                                        <td className="py-4 pr-4">{item.type}</td>
-                                        <td className="py-4 pr-4">{item.date}</td>
-                                        <td className="py-4 pr-4">Rs. {item.amount}</td>
-                                        <td className="py-4 pr-4">{item.status}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <div className="space-y-4">
+                        {activity.history.map((item) => (
+                            <div
+                                key={item.id}
+                                className="rounded-2xl border border-border bg-white p-5"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <div className="font-semibold">
+                                            {item.title}
+                                        </div>
+
+                                        <div className="mt-1 text-sm text-muted-foreground">
+                                            {item.date}
+                                        </div>
+                                    </div>
+
+                                    <div className="text-right">
+                                        <div className="font-bold">
+                                            Rs. {item.amount}
+                                        </div>
+
+                                        <div className="mt-1 text-sm">
+                                            {item.status}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 )}
             </Panel>
 
-            <div className="space-y-6">
-                <Panel title="Loyalty Calculator">
-                    <div className="rounded-3xl bg-[oklch(0.94_0.01_80)] p-5">
-                        <Gift className="h-6 w-6 text-[oklch(0.58_0.16_65)]" />
-                        <p className="mt-4 text-sm text-[oklch(0.5_0.012_70)]">
-                            Purchases above Rs. 5000 receive a 10% loyalty discount.
-                        </p>
-                        <input
-                            type="number"
-                            value={purchaseAmount}
-                            onChange={(event) => setPurchaseAmount(Number(event.target.value))}
-                            className="mt-5 w-full rounded-2xl border border-[oklch(0.88_0.012_80)] bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-accent"
-                        />
-                        <div className="mt-5 space-y-3 text-sm">
-                            <Row label="Discount" value={`Rs. ${loyalty.discount.toFixed(0)}`} />
-                            <Row label="Payable" value={`Rs. ${loyalty.payable.toFixed(0)}`} strong />
+            {/* LOYALTY SUMMARY */}
+            <Panel title="Loyalty Summary">
+                <div className="space-y-4">
+
+                    <div className="rounded-2xl border border-border p-5">
+                        <div className="text-sm text-muted-foreground">
+                            Discount Eligibility
+                        </div>
+
+                        <div className="mt-2 text-2xl font-bold text-green-600">
+                            10%
                         </div>
                     </div>
-                </Panel>
 
-                <Panel title="Credit Status">
-                    <StatusTile
-                        icon={CreditCard}
-                        label={creditIsOverdue ? "Reminder Required" : "Good Standing"}
-                        value={`Rs. ${profile.creditBalance}`}
-                        tone={creditIsOverdue ? "amber" : "dark"}
-                    />
-                </Panel>
-            </div>
+                    <div className="rounded-2xl border border-border p-5">
+                        <div className="text-sm text-muted-foreground">
+                            Credit Balance
+                        </div>
+
+                        <div className="mt-2 text-2xl font-bold">
+                            Rs. {profile.creditBalance ?? 0}
+                        </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-border p-5">
+                        <div className="text-sm text-muted-foreground">
+                            Current Status
+                        </div>
+
+                        <div className="mt-2 text-xl font-bold">
+                            Good Standing
+                        </div>
+                    </div>
+                </div>
+            </Panel>
         </div>
     );
 }
-
 function PaymentsPage({
     profile,
     loyalty,
     creditIsOverdue,
-    purchaseAmount,
     onPayWithEsewa,
     paymentLoading,
     esewaPayment,
@@ -1532,160 +1290,177 @@ function PaymentsPage({
     profile: CustomerProfile;
     loyalty: { discount: number; payable: number };
     creditIsOverdue: boolean;
-    purchaseAmount: number;
     onPayWithEsewa: () => void;
     paymentLoading: boolean;
     esewaPayment: EsewaPaymentInitiation | null;
 }) {
-    const recentBalance = Math.max(profile.totalSpend - profile.creditBalance, 0);
-    const dueLabel = profile.creditDueDate || "No active credit";
-    const standingText = creditIsOverdue ? "Reminder required" : "Good standing";
-    const standingTone = creditIsOverdue
-        ? "border-[oklch(0.86_0.11_55)] bg-[oklch(0.96_0.045_65)]"
-        : "border-[oklch(0.82_0.09_145)] bg-[oklch(0.95_0.04_145)]";
-    const paymentOptions = [
-        { label: "Cash at counter", badge: "Cash", note: "Pay at reception after service" },
-        { label: "Card payment", badge: "Card", note: "Debit and credit cards accepted" },
-        { label: "Bank transfer", badge: "Bank", note: "Use invoice number as reference" },
-        { label: "Mobile wallet", badge: "Wallet", note: "Supported wallet handoff" },
+    const paymentMethods = [
+        {
+            title: "Cash Payment",
+            description: "Pay directly at the service center.",
+        },
+        {
+            title: "Card Payment",
+            description: "Debit and credit cards are accepted.",
+        },
+        {
+            title: "Bank Transfer",
+            description: "Transfer using invoice reference number.",
+        },
     ];
 
     return (
-        <div className="grid xl:grid-cols-[minmax(0,1fr)_420px] gap-6">
-            <Panel className="overflow-hidden" title="Billing Summary">
-                <div className="grid md:grid-cols-3 gap-4">
-                    <div className="rounded-3xl border border-[oklch(0.86_0.035_82)] bg-[oklch(0.985_0.018_86)] p-5">
-                        <div className="text-[10px] uppercase tracking-[0.28em] text-[oklch(0.5_0.04_65)]">
-                            Payment Due
+        <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+
+            {/* PAYMENT SUMMARY */}
+            <Panel title="Payment Summary">
+                <div className="space-y-5">
+
+                    <div className="flex items-center justify-between rounded-2xl border border-[oklch(0.88_0.012_80)] bg-white p-5">
+                        <div>
+                            <div className="text-sm text-[oklch(0.5_0.012_70)]">
+                                Credit Balance
+                            </div>
+
+                            <div className="mt-2 text-3xl font-bold">
+                                Rs. {profile.creditBalance}
+                            </div>
                         </div>
-                        <div className="mt-3 text-3xl font-bold tracking-tight">
-                            Rs. {profile.creditBalance}
-                        </div>
-                        <div className="mt-2 text-sm text-[oklch(0.46_0.015_70)]">
-                            {profile.creditBalance > 0 ? "Outstanding balance" : "No amount pending"}
-                        </div>
+
+                        <CreditCard className="h-7 w-7 text-[oklch(0.58_0.16_75)]" />
                     </div>
 
-                    <div className="rounded-3xl border border-[oklch(0.86_0.035_82)] bg-white p-5">
-                        <div className="text-[10px] uppercase tracking-[0.28em] text-[oklch(0.5_0.04_65)]">
-                            Due Date
+                    <div className="flex items-center justify-between rounded-2xl border border-[oklch(0.88_0.012_80)] bg-white p-5">
+                        <div>
+                            <div className="text-sm text-[oklch(0.5_0.012_70)]">
+                                Loyalty Discount
+                            </div>
+
+                            <div className="mt-2 text-3xl font-bold text-green-600">
+                                Rs. {loyalty.discount.toFixed(0)}
+                            </div>
                         </div>
-                        <div className="mt-3 text-2xl font-bold tracking-tight">
-                            {dueLabel}
-                        </div>
-                        <div className="mt-2 text-sm text-[oklch(0.46_0.015_70)]">
-                            {creditIsOverdue ? "Please settle soon" : "No active reminder"}
-                        </div>
+
+                        <Gift className="h-7 w-7 text-green-600" />
                     </div>
 
-                    <div className={`rounded-3xl border p-5 ${standingTone}`}>
-                        <div className="text-[10px] uppercase tracking-[0.28em] text-[oklch(0.5_0.04_65)]">
-                            Billing Status
+                    <div className="flex items-center justify-between rounded-2xl bg-[oklch(0.92_0.13_75)] p-5">
+                        <div>
+                            <div className="text-sm text-[oklch(0.35_0.05_65)]">
+                                Final Payable
+                            </div>
+
+                            <div className="mt-2 text-4xl font-bold text-[oklch(0.18_0.012_60)]">
+                                Rs. {loyalty.payable.toFixed(0)}
+                            </div>
                         </div>
-                        <div className="mt-3 text-2xl font-bold tracking-tight">
-                            {standingText}
-                        </div>
-                        <div className="mt-2 text-sm text-[oklch(0.42_0.018_70)]">
-                            {creditIsOverdue ? "Reminder has been enabled" : "Ready for checkout"}
+
+                        <FileText className="h-8 w-8 text-[oklch(0.25_0.05_65)]" />
+                    </div>
+
+                    <div
+                        className={`rounded-2xl border p-5 ${creditIsOverdue
+                                ? "border-red-200 bg-red-50"
+                                : "border-green-200 bg-green-50"
+                            }`}
+                    >
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <div className="text-sm text-[oklch(0.5_0.012_70)]">
+                                    Payment Status
+                                </div>
+
+                                <div className="mt-2 text-xl font-bold">
+                                    {creditIsOverdue
+                                        ? "Payment Overdue"
+                                        : "Good Standing"}
+                                </div>
+
+                                <div className="mt-1 text-sm text-[oklch(0.45_0.012_70)]">
+                                    Due Date: {profile.creditDueDate || "No due"}
+                                </div>
+                            </div>
+
+                            <CheckCircle2 className="h-7 w-7" />
                         </div>
                     </div>
-                </div>
-
-                <div className="mt-5 grid md:grid-cols-3 gap-4">
-                    <PaymentMetric
-                        badge="Card"
-                        label="Credit Balance"
-                        value={`Rs. ${profile.creditBalance}`}
-                        hint={creditIsOverdue ? "Settle soon" : "No overdue alert"}
-                        tone="soft"
-                    />
-                    <PaymentMetric
-                        badge="Gift"
-                        label="Estimated Discount"
-                        value={`Rs. ${loyalty.discount.toFixed(0)}`}
-                        hint="Loyalty benefit"
-                        tone="light"
-                    />
-                    <PaymentMetric
-                        badge="Bill"
-                        label="Payable Estimate"
-                        value={`Rs. ${loyalty.payable.toFixed(0)}`}
-                        hint="After discount"
-                        tone="amber"
-                    />
-                </div>
-
-                <div className="mt-5 grid md:grid-cols-2 xl:grid-cols-4 gap-3 rounded-3xl bg-[oklch(0.94_0.01_80)] p-4">
-                    <PaymentDetail label="Recent paid" value={`Rs. ${recentBalance}`} />
-                    <PaymentDetail label="Estimate base" value={`Rs. ${purchaseAmount}`} />
-                    <PaymentDetail label="Due date" value={dueLabel} />
-                    <PaymentDetail label="Billing status" value={standingText} strong />
                 </div>
             </Panel>
 
-            <Panel title="Payment Options">
+            {/* PAYMENT METHODS */}
+            <Panel title="Payment Methods">
                 <div className="space-y-4">
-                    <div className="rounded-3xl border border-[oklch(0.86_0.035_82)] bg-[oklch(0.985_0.018_86)] p-5">
-                        <div className="flex items-center justify-between gap-4">
-                            <div>
-                                <div className="text-[10px] uppercase tracking-[0.28em] text-[oklch(0.5_0.04_65)]">
-                                    Fast checkout
-                                </div>
-                                <div className="mt-2 text-xl font-bold text-[oklch(0.17_0.012_60)]">Pay securely with eSewa</div>
+
+                    <button
+                        type="button"
+                        onClick={onPayWithEsewa}
+                        disabled={paymentLoading}
+                        className="flex w-full items-center justify-between rounded-2xl bg-[oklch(0.74_0.16_65)] px-5 py-4 text-left transition hover:opacity-90 disabled:opacity-70"
+                    >
+                        <div>
+                            <div className="text-lg font-bold text-[oklch(0.18_0.012_60)]">
+                                {paymentLoading
+                                    ? "Opening eSewa..."
+                                    : "Pay with eSewa"}
                             </div>
-                            <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[oklch(0.92_0.08_75)] text-xs font-bold uppercase tracking-[0.08em] text-[oklch(0.3_0.08_65)]">
-                                ⚡
+
+                            <div className="mt-1 text-sm text-[oklch(0.3_0.04_65)]">
+                                Secure online payment
                             </div>
                         </div>
-                        <p className="mt-4 text-sm leading-6 text-[oklch(0.44_0.018_70)]">
-                            Opens the eSewa sandbox payment screen with a signed payment request.
-                        </p>
-                    </div>
+
+                        <CreditCard className="h-5 w-5 text-[oklch(0.18_0.012_60)]" />
+                    </button>
 
                     {esewaPayment && (
                         <form
                             id="esewa-payment-form"
                             method={esewaPayment.method}
                             action={esewaPayment.formAction}
-                            className="rounded-3xl border border-[oklch(0.84_0.1_130)] bg-[oklch(0.94_0.05_130)] p-4"
+                            className="rounded-2xl border border-green-200 bg-green-50 p-4"
                         >
                             {Object.entries(esewaPayment.fields).map(([name, value]) => (
-                                <input key={name} type="hidden" name={name} value={value} />
+                                <input
+                                    key={name}
+                                    type="hidden"
+                                    name={name}
+                                    value={value}
+                                />
                             ))}
-                            <div className="mb-3 text-sm font-semibold text-[oklch(0.25_0.04_135)]">
-                                ✅ Payment request is ready
-                            </div>
+
                             <button
                                 type="button"
                                 onClick={() => {
-                                    const form = document.getElementById("esewa-payment-form") as HTMLFormElement | null;
-                                    if (form) HTMLFormElement.prototype.submit.call(form);
+                                    const form =
+                                        document.getElementById(
+                                            "esewa-payment-form"
+                                        ) as HTMLFormElement | null;
+
+                                    if (form) {
+                                        HTMLFormElement.prototype.submit.call(form);
+                                    }
                                 }}
-                                className="flex w-full items-center justify-between rounded-2xl bg-[oklch(0.205_0.012_60)] px-4 py-3 text-left text-sm font-semibold text-white transition hover:opacity-90"
+                                className="w-full rounded-xl bg-[oklch(0.205_0.012_60)] py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:opacity-90"
                             >
                                 Continue to eSewa
-                                <CreditCard className="h-4 w-4" />
                             </button>
                         </form>
                     )}
-                    <button
-                        type="button"
-                        onClick={onPayWithEsewa}
-                        disabled={paymentLoading}
-                        className="flex w-full items-center justify-between rounded-2xl bg-[oklch(0.74_0.16_65)] p-4 text-left text-[oklch(0.18_0.012_60)] shadow-[0_14px_28px_-18px_oklch(0.58_0.16_65)] transition hover:-translate-y-0.5 hover:opacity-95 disabled:cursor-wait disabled:opacity-70"
-                    >
-                        <span>
-                            <span className="block text-sm font-bold">
-                                {paymentLoading ? "Opening eSewa..." : "Pay with eSewa"}
-                            </span>
-                            <span className="mt-1 block text-xs opacity-70">⚡ Fast wallet checkout</span>
-                        </span>
-                        <CreditCard className="h-4 w-4" />
-                    </button>
 
-                    <div className="space-y-3">
-                        {paymentOptions.map((option) => (
-                            <PaymentOption key={option.label} {...option} />
+                    <div className="space-y-3 pt-3">
+                        {paymentMethods.map((method) => (
+                            <div
+                                key={method.title}
+                                className="rounded-2xl border border-[oklch(0.88_0.012_80)] bg-white p-4"
+                            >
+                                <div className="font-semibold">
+                                    {method.title}
+                                </div>
+
+                                <div className="mt-1 text-sm text-[oklch(0.5_0.012_70)]">
+                                    {method.description}
+                                </div>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -1694,87 +1469,6 @@ function PaymentsPage({
     );
 }
 
-function PaymentMetric({
-    badge,
-    label,
-    value,
-    hint,
-    tone,
-}: {
-    badge: string;
-    label: string;
-    value: string;
-    hint: string;
-    tone: "soft" | "amber" | "light";
-}) {
-    const styles = {
-        soft: "border border-[oklch(0.86_0.035_82)] bg-[oklch(0.985_0.018_86)] text-[oklch(0.18_0.012_60)]",
-        amber: "bg-[oklch(0.9_0.12_78)] text-[oklch(0.18_0.012_60)]",
-        light: "bg-white text-[oklch(0.18_0.012_60)]",
-    };
-
-    return (
-        <div className={`min-h-36 rounded-3xl p-5 ${styles[tone]}`}>
-            <div className="flex items-center justify-between">
-                <span className="rounded-xl bg-white/70 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[oklch(0.42_0.05_65)]">{badge}</span>
-                <FileText className="h-4 w-4 opacity-60" />
-            </div>
-            <div className="mt-6 text-[10px] uppercase tracking-[0.28em] opacity-60">
-                {label}
-            </div>
-            <div className="mt-2 text-2xl font-bold tracking-tight">{value}</div>
-            <div className="mt-2 text-xs opacity-65">{hint}</div>
-        </div>
-    );
-}
-
-function PaymentDetail({
-    label,
-    value,
-    strong = false,
-}: {
-    label: string;
-    value: string;
-    strong?: boolean;
-}) {
-    return (
-        <div className="rounded-2xl bg-[oklch(0.985_0.008_85)] px-4 py-3">
-            <div className="text-[10px] uppercase tracking-[0.22em] text-[oklch(0.5_0.012_70)]">
-                {label}
-            </div>
-            <div className={`mt-2 ${strong ? "text-base font-bold" : "text-sm font-semibold"}`}>
-                {value}
-            </div>
-        </div>
-    );
-}
-
-function PaymentOption({
-    label,
-    note,
-    emoji,
-    badge,
-}: {
-    label: string;
-    note: string;
-    emoji?: string;
-    badge?: string;
-}) {
-    return (
-        <div className="flex items-center justify-between gap-4 rounded-2xl bg-[oklch(0.94_0.01_80)] p-4 transition hover:bg-white">
-            <div className="flex items-center gap-3">
-                <div className="grid h-10 min-w-10 place-items-center rounded-xl bg-white px-2 text-[10px] font-bold uppercase tracking-[0.08em] text-[oklch(0.42_0.05_65)]">
-                    {badge ?? emoji}
-                </div>
-                <div>
-                    <div className="text-sm font-semibold">{label}</div>
-                    <div className="mt-1 text-xs text-[oklch(0.5_0.012_70)]">{note}</div>
-                </div>
-            </div>
-            <CreditCard className="h-4 w-4 shrink-0 text-[oklch(0.45_0.012_70)]" />
-        </div>
-    );
-}
 
 function SupportPage({
     supportForm,
@@ -1993,19 +1687,6 @@ function MiniStat({ label, value }: { label: string; value: string }) {
     );
 }
 
-function ProfileChip({ label, value }: { label: string; value: string }) {
-    return (
-        <div className="rounded-2xl border border-[oklch(0.88_0.012_80)] bg-white px-4 py-2">
-            <div className="text-[9px] uppercase tracking-[0.22em] text-[oklch(0.5_0.012_70)]">
-                {label}
-            </div>
-            <div className="mt-1 text-sm font-semibold text-[oklch(0.205_0.012_60)]">
-                {value}
-            </div>
-        </div>
-    );
-}
-
 function VehicleMeta({ label, value }: { label: string; value: string }) {
     return (
         <div className="px-5 py-4">
@@ -2123,11 +1804,10 @@ function PrimaryButton({
         <button
             type={type}
             onClick={onClick}
-            className={`inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
-                variant === "outline"
+            className={`inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${variant === "outline"
                     ? "border border-[oklch(0.88_0.012_80)] bg-white text-[oklch(0.205_0.012_60)] hover:bg-[oklch(0.94_0.01_80)]"
                     : "bg-[oklch(0.205_0.012_60)] text-white hover:opacity-90"
-            }`}
+                }`}
         >
             <Icon className="h-4 w-4" />
             {label}
@@ -2135,12 +1815,4 @@ function PrimaryButton({
     );
 }
 
-function Row({ label, value, strong = false }: { label: string; value: string; strong?: boolean }) {
-    return (
-        <div className="flex items-center justify-between">
-            <span className="text-[oklch(0.5_0.012_70)]">{label}</span>
-            <span className={strong ? "text-lg font-bold" : "font-semibold"}>{value}</span>
-        </div>
-    );
-}
 

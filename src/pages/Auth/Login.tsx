@@ -37,7 +37,7 @@ export default function LoginPage() {
                 navigate("/admin/dashboard");
             }
             else if (user.roles.includes("Staff")) {
-                navigate("/staff/dashboard");
+                navigate("/staff");
             }
             else {
                 navigate("/customer/dashboard");
@@ -171,21 +171,6 @@ export default function LoginPage() {
                                     required
                                     className="mt-2 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-accent"
                                 />
-                            </div>
-
-                            {/* REMEMBER */}
-                            <div className="flex items-center justify-between text-sm">
-                                <label className="flex items-center gap-2 text-muted-foreground">
-                                    <input type="checkbox" />
-                                    Remember me
-                                </label>
-
-                                <Link
-                                    to="/forgot-password"
-                                    className="text-accent hover:underline"
-                                >
-                                    Forgot password?
-                                </Link>
                             </div>
 
                             {/* BUTTON */}
