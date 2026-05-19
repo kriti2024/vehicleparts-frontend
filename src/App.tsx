@@ -8,7 +8,6 @@ import ContactPage from "./pages/ContactPage";
 
 import Login from "./pages/Auth/Login";
 import RegisterCustomer from "./pages/Auth/RegisterCustomer";
-import ForgotPassword from "./pages/Auth/ForgotPassword";
 
 import { StaffLayout } from "./components/staff/StaffLayout";
 import StaffDashboard from "./pages/Staff/StaffDashboard";
@@ -50,7 +49,6 @@ function App() {
 
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<RegisterCustomer />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
 
                 <Route
                     path="/staff"
