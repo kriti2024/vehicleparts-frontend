@@ -93,7 +93,6 @@ function App() {
                     "/customer/parts",
                     "/customer/payments",
                     "/customer/support",
-                    "/customer/notifications",
                     "/customer/history",
                 ].map((path) => (
                     <Route

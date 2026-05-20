@@ -26,7 +26,6 @@ import {
     Plus,
     Pencil,
     Trash2,
-    Mail,
     Phone,
     MapPin,
 } from "lucide-react";
@@ -72,10 +71,8 @@ const adminNav = [
 type Vendor = {
     vendorId: number;
     vendorName: string;
-    email?: string;
-    phoneNumber?: string;
+    phone?: string;
     address?: string;
-    totalParts?: number;
 };
 
 export default function VendorsPage() {
@@ -161,7 +158,6 @@ export default function VendorsPage() {
 
             <div>
 
-                {/* HEADER */}
                 <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
 
                     <div>
@@ -195,8 +191,7 @@ export default function VendorsPage() {
 
                 </div>
 
-                {/* STATS */}
-                <div className="grid md:grid-cols-3 gap-6 mb-8">
+                <div className="grid md:grid-cols-2 gap-6 mb-8">
 
                     <StatCard
                         label="Total Vendors"
@@ -208,18 +203,8 @@ export default function VendorsPage() {
                         value={`${vendors.length}`}
                     />
 
-                    <StatCard
-                        label="Total Parts Supply"
-                        value={`${vendors.reduce(
-                            (sum, v) =>
-                                sum + (v.totalParts ?? 0),
-                            0
-                        )}`}
-                    />
-
                 </div>
 
-                {/* VENDOR CARDS */}
                 <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
 
                     {vendors.length === 0 ? (
@@ -241,46 +226,26 @@ export default function VendorsPage() {
                                 className="rounded-3xl border border-[oklch(0.88_0.012_80)] bg-white p-6 hover:shadow-lg transition"
                             >
 
-                                {/* TOP */}
-                                <div className="flex items-start justify-between gap-4">
+                                <div>
 
-                                    <div>
-
-                                        <div className="text-[10px] tracking-[0.25em] uppercase text-[oklch(0.5_0.012_70)]">
-                                            Vendor
-                                        </div>
-
-                                        <h3 className="mt-2 text-2xl font-bold">
-                                            {vendor.vendorName}
-                                        </h3>
-
+                                    <div className="text-[10px] tracking-[0.25em] uppercase text-[oklch(0.5_0.012_70)]">
+                                        Vendor
                                     </div>
 
-                                    <div className="rounded-full bg-[oklch(0.94_0.01_80)] px-3 py-1 text-xs">
-                                        {vendor.totalParts ?? 0} Parts
-                                    </div>
+                                    <h3 className="mt-2 text-2xl font-bold leading-tight">
+                                        {vendor.vendorName}
+                                    </h3>
 
                                 </div>
 
-                                {/* DETAILS */}
                                 <div className="mt-6 space-y-4">
-
-                                    <div className="flex items-center gap-3 text-sm text-[oklch(0.45_0.012_70)]">
-
-                                        <Mail className="h-4 w-4" />
-
-                                        <span>
-                                            {vendor.email ?? "No email"}
-                                        </span>
-
-                                    </div>
 
                                     <div className="flex items-center gap-3 text-sm text-[oklch(0.45_0.012_70)]">
 
                                         <Phone className="h-4 w-4" />
 
                                         <span>
-                                            {vendor.phoneNumber ?? "No phone"}
+                                            {vendor.phone ?? "No phone"}
                                         </span>
 
                                     </div>
@@ -297,7 +262,6 @@ export default function VendorsPage() {
 
                                 </div>
 
-                                {/* ACTIONS */}
                                 <div className="mt-8 flex items-center gap-3">
 
                                     <button

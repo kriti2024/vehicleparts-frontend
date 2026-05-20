@@ -131,7 +131,7 @@ export default function DashboardShell({
                     <div className="flex items-center gap-4">
 
                         {/* SHOW BELL ONLY FOR ADMIN & CUSTOMER */}
-                        {role !== "Staff" && (
+                        {role == "Admin" && (
                             <button
                                 type="button"
                                 onClick={() => navigate(notificationPath)}

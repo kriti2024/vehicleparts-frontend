@@ -68,14 +68,14 @@ export default function EditVendor() {
     const [vendorName, setVendorName] =
         useState("");
 
-    const [email, setEmail] =
-        useState("");
-
-    const [phoneNumber, setPhoneNumber] =
+    const [phone, setPhone] =
         useState("");
 
     const [address, setAddress] =
         useState("");
+
+    const [loading, setLoading] =
+        useState(true);
 
     useEffect(() => {
 
@@ -92,15 +92,11 @@ export default function EditVendor() {
                     response.data;
 
                 setVendorName(
-                    vendor.vendorName
+                    vendor.vendorName ?? ""
                 );
 
-                setEmail(
-                    vendor.email ?? ""
-                );
-
-                setPhoneNumber(
-                    vendor.phoneNumber ?? ""
+                setPhone(
+                    vendor.phone ?? ""
                 );
 
                 setAddress(
@@ -110,6 +106,11 @@ export default function EditVendor() {
             } catch (error) {
 
                 console.error(error);
+            }
+
+            finally {
+
+                setLoading(false);
             }
         };
 
@@ -133,9 +134,7 @@ export default function EditVendor() {
 
                     vendorName,
 
-                    email,
-
-                    phoneNumber,
+                    phone,
 
                     address,
                 }
@@ -148,6 +147,15 @@ export default function EditVendor() {
             console.error(error);
         }
     };
+
+    if (loading) {
+
+        return (
+            <div className="min-h-screen grid place-items-center">
+                Loading vendor...
+            </div>
+        );
+    }
 
     return (
 
@@ -168,6 +176,10 @@ export default function EditVendor() {
                         Edit Vendor
                     </h1>
 
+                    <p className="mt-3 text-[oklch(0.5_0.012_70)]">
+                        Update vendor details and supplier information.
+                    </p>
+
                 </div>
 
                 <form
@@ -182,28 +194,18 @@ export default function EditVendor() {
                         onChange={(e) =>
                             setVendorName(e.target.value)
                         }
-                        className="w-full rounded-2xl border p-4"
+                        className="w-full rounded-2xl border border-[oklch(0.88_0.012_80)] p-4 outline-none focus:ring-2 focus:ring-black/10"
                         required
-                    />
-
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) =>
-                            setEmail(e.target.value)
-                        }
-                        className="w-full rounded-2xl border p-4"
                     />
 
                     <input
                         type="text"
                         placeholder="Phone Number"
-                        value={phoneNumber}
+                        value={phone}
                         onChange={(e) =>
-                            setPhoneNumber(e.target.value)
+                            setPhone(e.target.value)
                         }
-                        className="w-full rounded-2xl border p-4"
+                        className="w-full rounded-2xl border border-[oklch(0.88_0.012_80)] p-4 outline-none focus:ring-2 focus:ring-black/10"
                     />
 
                     <textarea
@@ -212,15 +214,29 @@ export default function EditVendor() {
                         onChange={(e) =>
                             setAddress(e.target.value)
                         }
-                        className="w-full rounded-2xl border p-4 h-32"
+                        className="w-full rounded-2xl border border-[oklch(0.88_0.012_80)] p-4 h-32 outline-none focus:ring-2 focus:ring-black/10"
                     />
 
-                    <button
-                        type="submit"
-                        className="rounded-2xl bg-[oklch(0.205_0.012_60)] text-white px-6 py-4"
-                    >
-                        Update Vendor
-                    </button>
+                    <div className="flex items-center gap-4">
+
+                        <button
+                            type="submit"
+                            className="rounded-2xl bg-[oklch(0.205_0.012_60)] text-white px-6 py-4 text-sm font-semibold hover:opacity-90 transition"
+                        >
+                            Update Vendor
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() =>
+                                navigate("/admin/vendors")
+                            }
+                            className="rounded-2xl border border-[oklch(0.88_0.012_80)] px-6 py-4 text-sm font-semibold hover:bg-[oklch(0.97_0.003_80)] transition"
+                        >
+                            Cancel
+                        </button>
+
+                    </div>
 
                 </form>
 

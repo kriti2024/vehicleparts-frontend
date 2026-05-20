@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
     BadgeCheck,
-    Bell,
     Boxes,
     CalendarDays,
     Car,
@@ -73,7 +72,6 @@ const customerNav = [
     { to: "/customer/parts", label: "Part Requests", icon: PackageSearch },
     { to: "/customer/payments", label: "Payments", icon: CreditCard },
     { to: "/customer/support", label: "Support", icon: Headphones },
-    { to: "/customer/notifications", label: "Notifications", icon: Bell },
     { to: "/customer/history", label: "History", icon: History },
 ];
 
@@ -127,11 +125,6 @@ const sectionCopy = {
         eyebrow: "Care Desk",
         title: "Support Center",
         subtitle: "Create support tickets and contact the service team.",
-    },
-    notifications: {
-        eyebrow: "Alerts",
-        title: "Notifications",
-        subtitle: "View service, part request, and payment reminders.",
     },
     history: {
         eyebrow: "Account",
@@ -640,14 +633,6 @@ export default function CustomerDashboard() {
                     />
                 )}
 
-                {section === "notifications" && (
-                    <NotificationsPage
-                        profile={profile}
-                        activity={activity}
-                        openRequests={openRequests}
-                        creditIsOverdue={creditIsOverdue}
-                    />
-                )}
             </div>
         </DashboardShell>
     );
@@ -1523,59 +1508,6 @@ function SupportPage({
     );
 }
 
-function NotificationsPage({
-    profile,
-    activity,
-    openRequests,
-    creditIsOverdue,
-}: {
-    profile: CustomerProfile;
-    activity: CustomerActivity;
-    openRequests: number;
-    creditIsOverdue: boolean;
-}) {
-    const notifications = [
-        {
-            id: "credit",
-            title: creditIsOverdue ? "Credit payment reminder" : "Credit account is clear",
-            meta: creditIsOverdue
-                ? `Rs. ${profile.creditBalance} is pending from ${profile.creditDueDate}.`
-                : "No overdue credit balance at the moment.",
-            icon: CreditCard,
-        },
-        {
-            id: "parts",
-            title: `${openRequests} open part request${openRequests === 1 ? "" : "s"}`,
-            meta: openRequests > 0 ? "Track sourcing from Part Requests." : "No pending part sourcing updates.",
-            icon: PackageSearch,
-        },
-        {
-            id: "booking",
-            title: activity.appointments[0]?.serviceType ?? "No upcoming booking",
-            meta: activity.appointments[0]
-                ? `${activity.appointments[0].preferredDate} - ${activity.appointments[0].status}`
-                : "Book a service visit when your vehicle needs attention.",
-            icon: Bell,
-        },
-    ];
-
-    return (
-        <div className="grid xl:grid-cols-3 gap-6">
-            <Panel className="xl:col-span-2" title="Customer Alerts">
-                <CompactList empty="No notifications yet." items={notifications} />
-            </Panel>
-
-            <Panel title="Reminder Settings">
-                <div className="space-y-3">
-                    <Checklist done label="Booking updates" />
-                    <Checklist done label="Part request updates" />
-                    <Checklist done={profile.creditBalance > 0} label="Credit reminders" />
-                    <Checklist done={profile.vehicles.length > 0} label="Vehicle service reminders" />
-                </div>
-            </Panel>
-        </div>
-    );
-}
 
 function Metric({ label, value, hint }: { label: string; value: string; hint: string }) {
     return (
@@ -1669,14 +1601,6 @@ function CompactList({
     );
 }
 
-function Checklist({ done, label }: { done: boolean; label: string }) {
-    return (
-        <div className="flex items-center gap-3 rounded-2xl bg-[oklch(0.94_0.01_80)] p-4">
-            <CheckCircle2 className={`h-5 w-5 ${done ? "text-green-600" : "text-[oklch(0.55_0.012_70)]"}`} />
-            <span className="text-sm font-medium">{label}</span>
-        </div>
-    );
-}
 
 function MiniStat({ label, value }: { label: string; value: string }) {
     return (

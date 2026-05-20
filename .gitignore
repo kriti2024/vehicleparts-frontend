@@ -28,6 +28,7 @@ dist-ssr
 *.user
 *.userosscache
 *.sln.docstates
+.env
 
 # Build folders
 bin/

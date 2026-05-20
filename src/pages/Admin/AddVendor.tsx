@@ -62,14 +62,14 @@ export default function AddVendor() {
     const [vendorName, setVendorName] =
         useState("");
 
-    const [email, setEmail] =
-        useState("");
-
-    const [phoneNumber, setPhoneNumber] =
+    const [phone, setPhone] =
         useState("");
 
     const [address, setAddress] =
         useState("");
+
+    const [loading, setLoading] =
+        useState(false);
 
     const handleSubmit = async (
         e: React.FormEvent
@@ -79,12 +79,13 @@ export default function AddVendor() {
 
         try {
 
+            setLoading(true);
+
             await api.post(
                 "/Vendor",
                 {
                     vendorName,
-                    email,
-                    phoneNumber,
+                    phone,
                     address,
                 }
             );
@@ -94,6 +95,10 @@ export default function AddVendor() {
         } catch (error) {
 
             console.error(error);
+
+        } finally {
+
+            setLoading(false);
         }
     };
 
@@ -116,6 +121,10 @@ export default function AddVendor() {
                         Add Vendor
                     </h1>
 
+                    <p className="mt-3 text-[oklch(0.5_0.012_70)]">
+                        Add supplier and contact details.
+                    </p>
+
                 </div>
 
                 <form
@@ -130,28 +139,18 @@ export default function AddVendor() {
                         onChange={(e) =>
                             setVendorName(e.target.value)
                         }
-                        className="w-full rounded-2xl border p-4"
+                        className="w-full rounded-2xl border border-[oklch(0.88_0.012_80)] p-4 outline-none focus:ring-2 focus:ring-black/10"
                         required
-                    />
-
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) =>
-                            setEmail(e.target.value)
-                        }
-                        className="w-full rounded-2xl border p-4"
                     />
 
                     <input
                         type="text"
                         placeholder="Phone Number"
-                        value={phoneNumber}
+                        value={phone}
                         onChange={(e) =>
-                            setPhoneNumber(e.target.value)
+                            setPhone(e.target.value)
                         }
-                        className="w-full rounded-2xl border p-4"
+                        className="w-full rounded-2xl border border-[oklch(0.88_0.012_80)] p-4 outline-none focus:ring-2 focus:ring-black/10"
                     />
 
                     <textarea
@@ -160,15 +159,32 @@ export default function AddVendor() {
                         onChange={(e) =>
                             setAddress(e.target.value)
                         }
-                        className="w-full rounded-2xl border p-4 h-32"
+                        className="w-full rounded-2xl border border-[oklch(0.88_0.012_80)] p-4 h-32 outline-none focus:ring-2 focus:ring-black/10"
                     />
 
-                    <button
-                        type="submit"
-                        className="rounded-2xl bg-[oklch(0.205_0.012_60)] text-white px-6 py-4"
-                    >
-                        Add Vendor
-                    </button>
+                    <div className="flex items-center gap-4">
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="rounded-2xl bg-[oklch(0.205_0.012_60)] text-white px-6 py-4 text-sm font-semibold hover:opacity-90 transition disabled:opacity-50"
+                        >
+                            {loading
+                                ? "Adding..."
+                                : "Add Vendor"}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() =>
+                                navigate("/admin/vendors")
+                            }
+                            className="rounded-2xl border border-[oklch(0.88_0.012_80)] px-6 py-4 text-sm font-semibold hover:bg-[oklch(0.97_0.003_80)] transition"
+                        >
+                            Cancel
+                        </button>
+
+                    </div>
 
                 </form>
 
